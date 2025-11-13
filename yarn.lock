@@ -441,6 +441,7 @@ __metadata:
   dependencies:
     "@hydrooj/register": "npm:^1.0.4"
     "@types/node": "npm:^24.10.1"
+    p-queue: "npm:^9.0.0"
     sharp: "npm:^0.34.5"
     typescript: "npm:^5.9.3"
   languageName: unknown
@@ -543,6 +544,30 @@ __metadata:
   bin:
     esbuild: bin/esbuild
   checksum: 10c0/87ce0b78699c4d192b8cf7e9b688e9a0da10e6f58ff85a368bf3044ca1fa95626c98b769b5459352282e0065585b6f994a5e6699af5cccf9d31178960e2b58fd
+  languageName: node
+  linkType: hard
+
+"eventemitter3@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "eventemitter3@npm:5.0.1"
+  checksum: 10c0/4ba5c00c506e6c786b4d6262cfbce90ddc14c10d4667e5c83ae993c9de88aa856033994dd2b35b83e8dc1170e224e66a319fa80adc4c32adcd2379bbc75da814
+  languageName: node
+  linkType: hard
+
+"p-queue@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "p-queue@npm:9.0.0"
+  dependencies:
+    eventemitter3: "npm:^5.0.1"
+    p-timeout: "npm:^7.0.0"
+  checksum: 10c0/0f27fcbec9e4e02f34cc3660f14b5746798c51a2425dc3d3c5238924c34726b1580606d5d1432fc05304e2350c00b112ded03eb43c1b49de7791a7150fbfcb4e
+  languageName: node
+  linkType: hard
+
+"p-timeout@npm:^7.0.0":
+  version: 7.0.1
+  resolution: "p-timeout@npm:7.0.1"
+  checksum: 10c0/87d96529d1096d506607218dba6f9ec077c6dbedd0c2e2788c748e33bcd05faae8a81009fd9d22ec0b3c95fc83f4717306baba223f6e464737d8b99294c3e863
   languageName: node
   linkType: hard
 

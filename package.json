@@ -6,6 +6,7 @@
   },
   "dependencies": {
     "@hydrooj/register": "^1.0.4",
+    "p-queue": "^9.0.0",
     "sharp": "^0.34.5"
   },
   "devDependencies": {
