@@ -1,0 +1,15 @@
+{
+  "name": "avatar-registry",
+  "packageManager": "yarn@4.11.0",
+  "scripts": {
+    "import": "node -r @hydrooj/register import.ts"
+  },
+  "dependencies": {
+    "@hydrooj/register": "^1.0.4",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "typescript": "^5.9.3"
+  }
+}
