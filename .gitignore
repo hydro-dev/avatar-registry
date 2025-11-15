@@ -13,6 +13,6 @@
 .pnp.*
 
 import/*.*
-import-done/*.*
+png/*.*
 
 !.gitkeep

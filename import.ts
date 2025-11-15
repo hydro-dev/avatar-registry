@@ -3,7 +3,8 @@ import fs from 'fs';
 import PQueue from 'p-queue';
 import os from 'os';
 
-const queue = new PQueue({ concurrency: os.cpus().length });
+const queue = new PQueue({ concurrency: os.cpus().length, autoStart: false });
+const debug = process.argv[process.argv.length - 1];
 
 // 检测图像是否为圆形logo
 // 通过检查宽高比和边缘像素分布来判断
@@ -46,9 +47,7 @@ async function isCircularLogo(
           const b = data[pixelIndex + 2];
           const alpha = data[pixelIndex + 3];
 
-          // 检查是否为非白色像素（有内容）
-          const isWhite = r >= 255 - threshold && g >= 255 - threshold && b >= 255 - threshold;
-          if (!isWhite && alpha > 0) {
+          if (!isWhitePixel(r, g, b, alpha, threshold)) {
             // 计算这个点到中心的距离
             const dx = x - centerX;
             const dy = y - centerY;
@@ -71,8 +70,8 @@ async function isCircularLogo(
 }
 
 // 判断像素是否为白色（允许一定阈值）
-function isWhitePixel(r: number, g: number, b: number, threshold = 10) {
-  return r >= 255 - threshold && g >= 255 - threshold && b >= 255 - threshold;
+function isWhitePixel(r: number, g: number, b: number, alpha: number, threshold = 10) {
+  return r >= 255 - threshold && g >= 255 - threshold && b >= 255 - threshold || alpha === 0;
 }
 
 // 检查像素是否在狭窄的白色区域内（只有1~2个像素宽）
@@ -93,7 +92,7 @@ function isInNarrowWhiteRegion(
     const r = data[pixelIndex];
     const g = data[pixelIndex + 1];
     const b = data[pixelIndex + 2];
-    if (isWhitePixel(r, g, b, threshold)) {
+    if (isWhitePixel(r, g, b, data[pixelIndex + 3], threshold)) {
       horizontalWidth++;
     } else {
       break;
@@ -106,7 +105,7 @@ function isInNarrowWhiteRegion(
     const r = data[pixelIndex];
     const g = data[pixelIndex + 1];
     const b = data[pixelIndex + 2];
-    if (isWhitePixel(r, g, b, threshold)) {
+    if (isWhitePixel(r, g, b, data[pixelIndex + 3], threshold)) {
       horizontalWidth++;
     } else {
       break;
@@ -122,7 +121,7 @@ function isInNarrowWhiteRegion(
     const r = data[pixelIndex];
     const g = data[pixelIndex + 1];
     const b = data[pixelIndex + 2];
-    if (isWhitePixel(r, g, b, threshold)) {
+    if (isWhitePixel(r, g, b, data[pixelIndex + 3], threshold)) {
       verticalWidth++;
     } else {
       break;
@@ -135,7 +134,7 @@ function isInNarrowWhiteRegion(
     const r = data[pixelIndex];
     const g = data[pixelIndex + 1];
     const b = data[pixelIndex + 2];
-    if (isWhitePixel(r, g, b, threshold)) {
+    if (isWhitePixel(r, g, b, data[pixelIndex + 3], threshold)) {
       verticalWidth++;
     } else {
       break;
@@ -166,7 +165,7 @@ function floodFillFrom(
   const g = data[startPixelIndex + 1];
   const b = data[startPixelIndex + 2];
 
-  if (!isWhitePixel(r, g, b, threshold) || visited.has(startIndex)) {
+  if (!isWhitePixel(r, g, b, data[startPixelIndex + 3], threshold) || visited.has(startIndex)) {
     return;
   }
 
@@ -209,7 +208,7 @@ function floodFillFrom(
             const g = data[neighborPixelIndex + 1];
             const b = data[neighborPixelIndex + 2];
 
-            if (isWhitePixel(r, g, b, threshold)) {
+            if (isWhitePixel(r, g, b, data[neighborPixelIndex + 3], threshold)) {
               // 如果邻居在狭窄区域内，跳过
               if (!isInNarrowWhiteRegion(data, width, height, nx, ny, threshold)) {
                 visited.add(neighborIndex);
@@ -339,21 +338,25 @@ async function floodFillTransparent(
 }
 
 async function main() {
-  for (const file of fs.readdirSync('import')) {
+  const files = fs.readdirSync('import');
+  for (const file of files) {
     let [name, ext] = file.split('.');
     if (!name || !ext) continue;
     name = name.replace(/[（）]/g, '');
+    if (debug && name !== debug) continue;
     queue.add(async () => {
       try {
-        console.log('Processing', file);
+        console.log('Processing', file, `${files.length - queue.size}/${files.length}`);
         let image = sharp(`import/${file}`);
 
         // 先去除白色边缘，使用 trim 自动检测边界
         // background 指定要裁剪的背景色（白色），lineArt 可以更精确地检测边缘
-        let trimmedImage = image.trim({
-          background: { r: 255, g: 255, b: 255 }, // 白色背景
-          threshold: 10, // 检测接近白色的像素的阈值（0-255），值越小越敏感
-        });
+        let trimmedImage = image
+          .flatten({ background: { r: 255, g: 255, b: 255 } })
+          .trim({
+            background: { r: 255, g: 255, b: 255 }, // 白色背景
+            threshold: 10, // 检测接近白色的像素的阈值（0-255），值越小越敏感
+          });
 
         let trimmedMetadata = await trimmedImage.metadata();
         let trimmedWidth = trimmedMetadata.width || 0;
@@ -413,6 +416,7 @@ async function main() {
       }
     });
   }
+  queue.start();
 }
 
 main().catch(console.error);

@@ -2,6 +2,7 @@
   "name": "avatar-registry",
   "packageManager": "yarn@4.11.0",
   "scripts": {
+    "topng": "node -r @hydrooj/register topng.ts",
     "import": "node -r @hydrooj/register import.ts"
   },
   "dependencies": {
