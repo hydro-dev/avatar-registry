@@ -3,7 +3,8 @@
   "packageManager": "yarn@4.11.0",
   "scripts": {
     "topng": "node -r @hydrooj/register topng.ts",
-    "import": "node -r @hydrooj/register import.ts"
+    "import": "node -r @hydrooj/register import.ts",
+    "deploy": "node -r @hydrooj/register deploy.ts"
   },
   "dependencies": {
     "@hydrooj/register": "^1.0.4",
