@@ -4,7 +4,7 @@ import PQueue from 'p-queue';
 import os from 'os';
 
 const queue = new PQueue({ concurrency: os.cpus().length, autoStart: false });
-const debug = process.argv[process.argv.length - 1];
+const debug = process.argv[2];
 
 // 检测图像是否为圆形logo
 // 通过检查宽高比和边缘像素分布来判断
@@ -338,16 +338,16 @@ async function floodFillTransparent(
 }
 
 async function main() {
-  const files = fs.readdirSync('import');
-  for (const file of files) {
-    let [name, ext] = file.split('.');
+  const files = fs.readdirSync('import', { withFileTypes: true });
+  for (const file of files.filter(file => file.isFile())) {
+    let [name, ext] = file.name.split('.');
     if (!name || !ext) continue;
     name = name.replace(/[（）]/g, '');
     if (debug && name !== debug) continue;
     queue.add(async () => {
       try {
-        console.log('Processing', file, `${files.length - queue.size}/${files.length}`);
-        let image = sharp(`import/${file}`);
+        console.log('Processing', file.name, `${files.length - queue.size}/${files.length}`);
+        let image = sharp(`import/${file.name}`);
 
         // 先去除白色边缘，使用 trim 自动检测边界
         // background 指定要裁剪的背景色（白色），lineArt 可以更精确地检测边缘
