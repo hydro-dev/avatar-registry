@@ -410,9 +410,9 @@ async function main() {
         }
 
         // 保存处理后的图像
-        await processedImage.toFormat('webp').toFile(`avatars/${name}.webp`);
+        await processedImage.toFormat('webp').toFile(`avatars/${name.replace(/^\d+ ?/, '')}.webp`);
       } catch (e) {
-        console.error(file, e);
+        console.error(file.name, e);
       }
     });
   }
