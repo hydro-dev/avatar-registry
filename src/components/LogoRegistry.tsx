@@ -1,4 +1,4 @@
-import { CircleHelp, Moon, Sun, Upload } from 'lucide-react';
+import { CircleHelp, Moon, Sun, Upload, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 export type Logo = {
@@ -46,7 +46,9 @@ function LogoSample({ logo, dark = false }: { logo: Logo; dark?: boolean }) {
       <h3>{dark ? '黑底' : '白底'}</h3>
       <div className="preview-canvas">
         <div className="logo-sample">
-          <img className="detail-logo" src={logo.src} alt={`${logo.name} logo`} />
+          <span className="detail-logo-stage logo-stage-plain">
+            <img className="detail-logo logo-image" src={logo.src} alt={`${logo.name} logo`} loading="lazy" decoding="async" />
+          </span>
           <span className="sample-team-name">这里是一个队名</span>
         </div>
       </div>
@@ -66,7 +68,7 @@ function ScoreboardCard({ logo, dark = false }: { logo: Logo; dark?: boolean }) 
       <div className="scoreboard-row">
         <span className="rank-cell">12</span>
         <span className="team-cell">
-          <img className="scoreboard-logo" src={logo.src} alt={`${logo.name} logo`} />
+          <img className="scoreboard-logo" src={logo.src} alt={`${logo.name} logo`} loading="lazy" decoding="async" />
           <span className="team-copy">
             <strong>{logo.name} - 这里是一个队名</strong>
             <span className="problem-strip" aria-label="通过题目">
@@ -78,8 +80,8 @@ function ScoreboardCard({ logo, dark = false }: { logo: Logo; dark?: boolean }) 
             </span>
           </span>
         </span>
-        <span className="score-cell">6</span>
-        <span className="penalty-cell">742</span>
+        <span className="score-cell">3</span>
+        <span className="penalty-cell">233</span>
       </div>
     </div>
   );
@@ -89,10 +91,11 @@ export default function LogoRegistry({ logos }: LogoRegistryProps) {
   const [query, setQuery] = useState('');
   const [selectedLogo, setSelectedLogo] = useState<Logo | null>(null);
   const [theme, setTheme] = useState<ThemeMode>('light');
-  const [isUploadInfoOpen, setIsUploadInfoOpen] = useState(false);
+  const [isUploadInfoOpen, setIsUploadInfoOpen] = useState(true);
   const [copyStatus, setCopyStatus] = useState<CopyStatus>('idle');
   const dialogRef = useRef<HTMLDialogElement>(null);
   const uploadDialogRef = useRef<HTMLDialogElement>(null);
+  const isInitialUploadInfoRef = useRef(true);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const visibleLogos = useMemo(() => {
@@ -180,12 +183,23 @@ export default function LogoRegistry({ logos }: LogoRegistryProps) {
   }
 
   function openUploadInfo() {
+    isInitialUploadInfoRef.current = false;
     setCopyStatus('idle');
     setIsUploadInfoOpen(true);
   }
 
   function closeUploadInfo() {
     setIsUploadInfoOpen(false);
+  }
+
+  function handleUploadInfoClose() {
+    setIsUploadInfoOpen(false);
+
+    if (!isInitialUploadInfoRef.current) return;
+    isInitialUploadInfoRef.current = false;
+    window.requestAnimationFrame(() => {
+      searchInputRef.current?.focus();
+    });
   }
 
   function toggleTheme() {
@@ -206,8 +220,13 @@ export default function LogoRegistry({ logos }: LogoRegistryProps) {
       <main className="app-shell">
         <header className="app-header">
           <div className="title-block">
-            <p className="eyebrow">Hydro Contest Team</p>
-            <h1>School Logo Registry</h1>
+            <img className="brand-logo" src="/HydroLogo.png" alt="Hydro" loading="lazy" decoding="async" />
+            <div className="title-copy">
+              <a className="title-link" title="Hydro Contest Team" href="https://contest.hydro.ac" target="_blank" rel="noopener noreferrer">
+                <span>Hydro Contest Team</span>
+              </a>
+              <h1>School Logo Registry</h1>
+            </div>
           </div>
 
           <div className="toolbar" role="search">
@@ -225,15 +244,20 @@ export default function LogoRegistry({ logos }: LogoRegistryProps) {
               />
             </label>
             <div className="toolbar-side">
-              <output id="logo-count" className="logo-count" htmlFor="logo-search">
-                {visibleLogos.length} logos
-              </output>
+              <div className="logo-summary">
+                <output id="logo-count" className="logo-count" htmlFor="logo-search">
+                  {visibleLogos.length} logos
+                </output>
+                <button className="toolbar-text-link" type="button" onClick={openUploadInfo}>
+                  没有 logo?
+                </button>
+              </div>
               <div className="toolbar-actions">
                 <button
                   className="upload-info-button"
                   type="button"
-                  aria-label="上传新logo"
-                  data-tooltip="上传新logo"
+                  aria-label="提供新logo"
+                  data-tooltip="提供新logo"
                   onClick={openUploadInfo}
                 >
                   <Upload className="theme-icon" aria-hidden="true" />
@@ -242,13 +266,14 @@ export default function LogoRegistry({ logos }: LogoRegistryProps) {
                   className="theme-toggle"
                   type="button"
                   aria-label={theme === 'dark' ? '切换到浅色模式' : '切换到深色模式'}
+                  data-tooltip={theme === 'dark' ? '切换到浅色模式' : '切换到深色模式'}
                   aria-pressed={theme === 'dark'}
                   onClick={toggleTheme}
                 >
                   {theme === 'dark' ? <Sun className="theme-icon" aria-hidden="true" /> : <Moon className="theme-icon" aria-hidden="true" />}
                 </button>
                 <a
-                  className="help-link"
+                  className="icon-link help-link"
                   href="https://contest.hydro.ac"
                   aria-label="了解 Hydro Contest Team"
                   data-tooltip="了解 Hydro Contest Team"
@@ -270,7 +295,7 @@ export default function LogoRegistry({ logos }: LogoRegistryProps) {
               onClick={() => setSelectedLogo(logo)}
             >
               <span className="logo-stage">
-                <img src={logo.src} alt="" loading="lazy" decoding="async" />
+                <img className="logo-image" src={logo.src} alt="" loading="lazy" decoding="async" />
               </span>
               <span className="logo-name">{logo.name}</span>
             </button>
@@ -280,7 +305,7 @@ export default function LogoRegistry({ logos }: LogoRegistryProps) {
         {visibleLogos.length === 0 && (
           <div className="empty-state">
             <button className="empty-upload-button" type="button" onClick={openUploadInfo}>
-              没有 logo？点我上传新 logo
+              没有 logo？点我提供新 logo
             </button>
           </div>
         )}
@@ -299,30 +324,29 @@ export default function LogoRegistry({ logos }: LogoRegistryProps) {
           <div className="detail-shell">
             <header className="detail-header">
               <div className="detail-title-block">
-                <p className="eyebrow">Logo Detail</p>
+                <p className="detail-file">Logo Detail - {selectedLogo.file}</p>
                 <h2 id="detail-title">{selectedLogo.name}</h2>
-                <p className="detail-file">{selectedLogo.file}</p>
                 {hasLowLogoResolution(selectedLogo) && (
                   <button className="logo-quality-warning" type="button" onClick={openUploadInfo}>
-                    当前 logo 尺寸 {formatLogoSize(selectedLogo)} 不够清晰，技术组建议上传新 logo。
+                    当前 logo 尺寸 {formatLogoSize(selectedLogo)} 不够清晰，技术组建议提供新 logo。
                   </button>
                 )}
                 <button className="inline-upload-link" type="button" onClick={openUploadInfo}>
-                  logo 不对？点我上传新 logo
+                  logo 不对或展示效果不佳？点我提供新 logo
                 </button>
               </div>
               <div className="detail-actions">
                 <button
                   className="upload-info-button detail-upload-button"
                   type="button"
-                  aria-label="上传新logo"
-                  data-tooltip="上传新logo"
+                  aria-label="提供新logo"
+                  data-tooltip="提供新logo"
                   onClick={openUploadInfo}
                 >
                   <Upload className="theme-icon" aria-hidden="true" />
                 </button>
                 <button className="close-button" type="button" aria-label="关闭详情" onClick={closeDetail}>
-                  &times;
+                  <X className="theme-icon" aria-hidden="true" />
                 </button>
               </div>
             </header>
@@ -350,29 +374,32 @@ export default function LogoRegistry({ logos }: LogoRegistryProps) {
         onClick={(event) => {
           if (event.target === event.currentTarget) closeUploadInfo();
         }}
-        onClose={closeUploadInfo}
+        onClose={handleUploadInfoClose}
       >
         <div className="upload-shell">
           <header className="upload-header">
             <div className="detail-title-block">
               <p className="eyebrow">Logo Upload</p>
-              <h2 id="upload-title">上传或更新校徽</h2>
+              <h2 id="upload-title">{isInitialUploadInfoRef.current ? '请先确认校徽要求' : '提供或更新校徽'}</h2>
             </div>
-            <button className="close-button" type="button" aria-label="关闭上传说明" onClick={closeUploadInfo}>
-              &times;
+            <button className="close-button" type="button" aria-label="关闭提供说明" onClick={closeUploadInfo}>
+              <X className="theme-icon" aria-hidden="true" />
             </button>
           </header>
 
           <div className="upload-content">
-            <p>Hydro 赛事技术组受 ICPC 总部委托，同时还在进行校徽的收集，技术组对校徽的统一要求如下：</p>
-            <p className="identity-note">请使用学校邮箱给我们发消息以验证身份，否则不做处理。</p>
+            {isInitialUploadInfoRef.current && (
+              <p className="identity-note">请先确认校徽用途与提交规范，再搜索自己的学校 logo。如现有校徽不正确，请按要求提交更新。</p>
+            )}
+            <p className="identity-note">如您代表高校或相关机构提交校徽，请优先使用单位邮箱与我们联系，以便技术组核验提交来源，确保校徽信息更新准确、可靠。 </p>
+            <p>Hydro 赛事技术组受 ICPC 总部委托，正在进行校徽的收集，技术组对校徽的统一要求如下：</p>
 
             <ul>
               <li>如果是 svg，只需提供 svg 即可，技术组会处理为合乎标准的格式；</li>
               <li>
                 如果是 png，则：
                 <ol type="a">
-                  <li>尺寸必须为 512 像素 x 512 像素；</li>
+                  <li>尺寸必须大于 512 像素 x 512 像素；</li>
                   <li>背景必须为透明底色，不可使用纯色背景；</li>
                   <li>如果内部有镂空，则必须用白色填充；</li>
                   <li>如果 logo 配有深色文字，则文字部分应当有白边描边。</li>
@@ -383,13 +410,13 @@ export default function LogoRegistry({ logos }: LogoRegistryProps) {
             <p>附加说明：</p>
 
             <ol type="a">
-              <li>技术组建议优先上传 svg。对于 ai 等其他矢量格式，请自行转换。</li>
+              <li>技术组建议优先提供 svg。对于 ai 等其他矢量格式，请自行转换。</li>
               <li>
-                对于 jpg 等格式请勿上传。不符合以上要求的校徽技术组不保证能够正常更新信息库，也不保证届时在比赛各场合的显示效果（例如可能出现：比赛需要显示校徽的地方无法正确显示校徽，或显示错误等）。
+                对于 jpg 等格式请勿提供。不符合以上要求的校徽技术组不保证能够正常更新信息库，也不保证届时在比赛各场合的显示效果（例如可能出现：比赛需要显示校徽的地方无法正确显示校徽，或显示错误等）。
               </li>
               <li>为保证数据一致性及不影响工作效率，错误的校徽在截止日期后只能等待下一年更新时修改，EC 委员会、比赛主办方等均无法修改。</li>
               <li>
-                数据将以上传的内容为准，如校徽不正确、比例异常、有水印、图片质量过差等情况，将被视作学校行为，技术组将充分尊重意愿，以原始数据使用贵校的校徽。
+                数据将以提供的内容为准，如校徽不正确、比例异常、有水印、图片质量过差等情况，将被视作学校行为，技术组将充分尊重意愿，以原始数据使用贵校的校徽。
               </li>
               <li>根据实际情况，技术组建议学校优先提供彩色而非黑白校徽（因黑白校徽使用场景会受到很大的制约）。</li>
             </ol>
@@ -409,7 +436,12 @@ export default function LogoRegistry({ logos }: LogoRegistryProps) {
           </div>
 
           <footer className="upload-footer">
-            <a className="mail-action primary" href={`mailto:${CONTACT_EMAIL}`}>
+            {isInitialUploadInfoRef.current && (
+              <button className="mail-action primary" type="button" onClick={closeUploadInfo}>
+                我知道了，开始搜索
+              </button>
+            )}
+            <a className={`mail-action ${isInitialUploadInfoRef.current ? '' : 'primary'}`} href={`mailto:${CONTACT_EMAIL}`}>
               发邮件
             </a>
             <button className="mail-action" type="button" onClick={copyEmailAddress}>
@@ -525,13 +557,43 @@ input {
   min-width: 0;
 }
 
-.eyebrow {
-  margin: 0 0 5px;
+.title-block {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+}
+
+.brand-logo {
+  display: block;
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+}
+
+.title-copy {
+  min-width: 0;
+}
+
+.title-link,
+.title-link:visited,
+.title-link:hover,
+.title-link:focus-visible {
+  display: inline-flex;
+  width: fit-content;
   color: var(--accent-strong);
   font-size: 12px;
   font-weight: 800;
+  line-height: 1.2;
   letter-spacing: 0;
+  text-decoration: none;
   text-transform: uppercase;
+}
+
+.title-link:focus-visible {
+  border-radius: 4px;
+  box-shadow: 0 0 0 3px var(--focus-ring);
+  outline: none;
 }
 
 h1,
@@ -543,8 +605,8 @@ p {
 
 h1 {
   margin: 0;
-  font-size: clamp(28px, 5vw, 58px);
-  line-height: 0.98;
+  font-size: clamp(24px, 4vw, 42px);
+  line-height: 1.04;
   letter-spacing: 0;
 }
 
@@ -599,6 +661,15 @@ h1 {
   min-width: 0;
 }
 
+.logo-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
 .logo-count {
   color: var(--muted);
   font-size: 14px;
@@ -606,10 +677,34 @@ h1 {
   white-space: nowrap;
 }
 
+.toolbar-text-link {
+  padding: 0;
+  color: var(--accent-strong);
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.25;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+
+.toolbar-text-link:hover,
+.toolbar-text-link:focus-visible {
+  color: var(--accent);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+  outline: none;
+}
+
 .upload-info-button,
 .theme-toggle,
-.help-link,
+.icon-link,
 .mail-action {
+  display: inline-grid;
+  place-items: center;
   min-height: 44px;
   padding: 0 14px;
   color: var(--accent-strong);
@@ -625,7 +720,7 @@ h1 {
 
 .upload-info-button,
 .theme-toggle,
-.help-link {
+.icon-link {
   display: grid;
   place-items: center;
   width: 44px;
@@ -633,12 +728,14 @@ h1 {
 }
 
 .upload-info-button,
-.help-link {
+.theme-toggle,
+.icon-link {
   position: relative;
 }
 
 .upload-info-button::after,
-.help-link::after {
+.theme-toggle::after,
+.icon-link::after {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
@@ -664,8 +761,10 @@ h1 {
 
 .upload-info-button:hover::after,
 .upload-info-button:focus-visible::after,
-.help-link:hover::after,
-.help-link:focus-visible::after {
+.theme-toggle:hover::after,
+.theme-toggle:focus-visible::after,
+.icon-link:hover::after,
+.icon-link:focus-visible::after {
   opacity: 1;
   transform: translateY(0);
 }
@@ -680,8 +779,8 @@ h1 {
 .upload-info-button:focus-visible,
 .theme-toggle:hover,
 .theme-toggle:focus-visible,
-.help-link:hover,
-.help-link:focus-visible,
+.icon-link:hover,
+.icon-link:focus-visible,
 .mail-action:hover,
 .mail-action:focus-visible {
   color: var(--accent-strong);
@@ -691,8 +790,6 @@ h1 {
 }
 
 .mail-action.primary {
-  display: inline-grid;
-  place-items: center;
   color: #ffffff;
   background: var(--accent);
   border-color: var(--accent);
@@ -707,9 +804,9 @@ h1 {
 
 .logo-card {
   display: grid;
-  grid-template-rows: minmax(112px, 1fr) 44px;
+  grid-template-rows: 124px 44px;
   gap: 10px;
-  min-height: 176px;
+  min-height: 202px;
   padding: 12px;
   color: var(--text);
   text-align: center;
@@ -735,9 +832,12 @@ h1 {
 .logo-stage {
   display: grid;
   place-items: center;
+  justify-self: center;
+  width: 124px;
+  height: 124px;
   min-width: 0;
-  aspect-ratio: 1;
-  padding: 14px;
+  padding: 10px;
+  overflow: hidden;
   background:
     linear-gradient(45deg, var(--checker-cell) 25%, transparent 25%),
     linear-gradient(-45deg, var(--checker-cell) 25%, transparent 25%),
@@ -754,11 +854,18 @@ h1 {
   border-radius: 8px;
 }
 
-.logo-stage img,
-.scoreboard-logo {
+.logo-image {
   display: block;
   width: 100%;
   height: 100%;
+  min-width: 0;
+  min-height: 0;
+  object-fit: contain;
+  object-position: center;
+}
+
+.scoreboard-logo {
+  display: block;
   object-fit: contain;
 }
 
@@ -918,6 +1025,8 @@ h2 {
 }
 
 .close-button {
+  display: grid;
+  place-items: center;
   width: 40px;
   height: 40px;
   padding: 0;
@@ -926,8 +1035,6 @@ h2 {
   border: 1px solid var(--line);
   border-radius: 8px;
   cursor: pointer;
-  font-size: 28px;
-  line-height: 1;
 }
 
 .close-button:hover,
@@ -1024,8 +1131,10 @@ h2 {
   display: grid;
   place-items: center;
   min-width: 0;
-  height: clamp(170px, 32dvh, 300px);
-  padding: clamp(18px, 4vw, 42px);
+  aspect-ratio: 16 / 9;
+  min-height: 240px;
+  max-height: 300px;
+  padding: clamp(10px, 2vw, 14px);
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -1046,21 +1155,29 @@ h2 {
 
 .logo-sample {
   display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
   gap: 14px;
+  align-content: center;
   place-items: center;
   width: 100%;
   height: 100%;
   min-width: 0;
 }
 
-.detail-logo {
-  display: block;
-  width: clamp(108px, 48%, 190px);
-  height: clamp(108px, 48%, 190px);
-  max-width: 60%;
-  max-height: 76%;
-  object-fit: contain;
+.detail-logo-stage {
+  display: grid;
+  place-items: center;
+  width: 220px;
+  height: 220px;
+  min-width: 0;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.logo-stage-plain {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
 }
 
 .sample-team-name {
@@ -1260,6 +1377,16 @@ h2 {
     padding: 14px 0;
   }
 
+  .title-block {
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .brand-logo {
+    width: 72px;
+    height: 72px;
+  }
+
   .toolbar {
     grid-template-columns: 1fr;
   }
@@ -1272,13 +1399,17 @@ h2 {
     justify-content: flex-start;
   }
 
+  .logo-summary {
+    justify-content: flex-start;
+  }
+
   .logo-count {
     text-align: left;
   }
 
   .theme-toggle,
   .upload-info-button,
-  .help-link {
+  .icon-link {
     flex: 0 0 44px;
   }
 
@@ -1292,9 +1423,15 @@ h2 {
   }
 
   .logo-card {
-    grid-template-rows: minmax(96px, 1fr) 44px;
-    min-height: 160px;
+    grid-template-rows: 108px 44px;
+    min-height: 182px;
     padding: 10px;
+  }
+
+  .logo-stage {
+    width: 108px;
+    height: 108px;
+    padding: 8px;
   }
 
   .preview-grid {
@@ -1302,15 +1439,15 @@ h2 {
   }
 
   .preview-canvas {
-    height: clamp(136px, 26dvh, 220px);
+    min-height: 240px;
+    max-height: 320px;
     padding: 18px;
   }
 
-  .detail-logo {
-    width: clamp(92px, 44%, 150px);
-    height: clamp(92px, 44%, 150px);
-    max-width: 54%;
-    max-height: 70%;
+  .detail-logo-stage {
+    width: 180px;
+    height: 180px;
+    padding: 14px;
   }
 
   .scoreboard-head,
@@ -1417,9 +1554,10 @@ h2 {
     gap: 8px;
   }
 
-  .detail-logo {
-    width: clamp(84px, 42%, 128px);
-    height: clamp(84px, 42%, 128px);
+  .detail-logo-stage {
+    width: 160px;
+    height: 160px;
+    padding: 12px;
   }
 
   .sample-team-name {
@@ -1491,13 +1629,14 @@ h2 {
 
 @media (max-height: 720px) {
   .preview-canvas {
-    height: clamp(128px, 24dvh, 180px);
-    padding: 18px;
+    min-height: 220px;
+    max-height: 280px;
+    padding: 14px;
   }
 
-  .detail-logo {
-    width: clamp(78px, 40%, 130px);
-    height: clamp(78px, 40%, 130px);
+  .detail-logo-stage {
+    width: 150px;
+    height: 150px;
   }
 
   .scoreboard-row {
