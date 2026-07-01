@@ -11,10 +11,14 @@
 
 #!.yarn/cache
 .pnp.*
+node_modules
+.astro
+site-dist
+dist/**
+!dist/.gitkeep
 
 import/*.*
 import/*/*
 png/*.*
-dist/*.*
 
 !.gitkeep

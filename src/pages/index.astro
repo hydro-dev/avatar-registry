@@ -1,0 +1,49 @@
+---
+import { join } from 'node:path';
+import sharp from 'sharp';
+import LogoRegistry, { type Logo } from '../components/LogoRegistry';
+
+const logoModules = import.meta.glob<string>('../../avatars/*.webp', {
+  eager: true,
+  import: 'default',
+  query: '?url',
+});
+
+const collator = new Intl.Collator('zh-Hans-CN', {
+  numeric: true,
+  sensitivity: 'base',
+});
+
+const logos: Logo[] = (
+  await Promise.all(
+    Object.entries(logoModules).map(async ([path, src]) => {
+      const file = path.split('/').pop() ?? '';
+      const name = file.replace(/\.webp$/i, '');
+      const metadata = await sharp(join(process.cwd(), 'avatars', file)).metadata();
+      return {
+        name,
+        src,
+        file,
+        width: metadata.width ?? null,
+        height: metadata.height ?? null,
+      };
+    }),
+  )
+).sort((left, right) => collator.compare(left.name, right.name));
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Hydro Contest Team School Logo Registry"
+    />
+    <title>Hydro Contest Team School Logo Registry</title>
+  </head>
+  <body>
+    <LogoRegistry client:load logos={logos} />
+  </body>
+</html>
