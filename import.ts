@@ -1,422 +1,331 @@
 import sharp from 'sharp';
 import fs from 'fs';
+import path from 'path';
 import PQueue from 'p-queue';
-import os from 'os';
 
-const queue = new PQueue({ concurrency: os.cpus().length, autoStart: false });
-const debug = process.argv[2];
+const debug = process.argv[2]?.replace(/[（）]/g, '');
+const queue = new PQueue({ concurrency: 1, autoStart: false });
 
-// 检测图像是否为圆形logo
-// 通过检查宽高比和边缘像素分布来判断
-async function isCircularLogo(
-  imageBuffer: Buffer,
-  width: number,
-  height: number,
-): Promise<boolean> {
-  // 1. 检查宽高比：圆形logo在trim后应该接近正方形
-  const aspectRatio = Math.min(width, height) / Math.max(width, height);
-  if (aspectRatio < 0.85) return false;
-  // 2. 检查边缘像素分布，判断是否大致为圆形
-  const { data } = await sharp(imageBuffer)
-    .ensureAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
+const IMPORT_DIR = 'import';
+const AVATAR_DIR = 'avatars';
+const MIN_OUTPUT_SIDE = 512;
+const MAX_OUTPUT_SIDE = 1024;
+const WORKING_MAX_SIDE = 2048;
+const SVG_MAX_DENSITY = 4096;
+const ALPHA_THRESHOLD = 8;
+const LIGHT_THRESHOLD = 245;
+const EDGE_COVERAGE_MIN = 0.72;
 
-  const centerX = width / 2;
-  const centerY = height / 2;
-  const maxRadius = Math.min(width, height) / 2;
-  const threshold = 10; // 白色检测阈值
+type RawImage = {
+  data: Buffer;
+  width: number;
+  height: number;
+};
 
-  // 采样边缘像素，检查是否大致形成圆形
-  const sampleCount = 32; // 采样32个点
-  let circularPoints = 0;
-  let totalSamples = 0;
+type BBox = {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+};
 
-  for (let i = 0; i < sampleCount; i++) {
-    const angle = (i / sampleCount) * Math.PI * 2;
-    // 从中心向外扫描，找到第一个非白色像素
-    for (let radius = maxRadius * 0.85; radius <= maxRadius * 0.98; radius += 0.2) {
-      const x = Math.round(centerX + Math.cos(angle) * radius);
-      const y = Math.round(centerY + Math.sin(angle) * radius);
-
-      if (x >= 0 && x < width && y >= 0 && y < height) {
-        const pixelIndex = (y * width + x) * 4;
-        if (pixelIndex >= 0 && pixelIndex < data.length) {
-          const r = data[pixelIndex];
-          const g = data[pixelIndex + 1];
-          const b = data[pixelIndex + 2];
-          const alpha = data[pixelIndex + 3];
-
-          if (!isWhitePixel(r, g, b, alpha, threshold)) {
-            // 计算这个点到中心的距离
-            const dx = x - centerX;
-            const dy = y - centerY;
-            const distance = Math.sqrt(dx * dx + dy * dy);
-            // 如果距离接近当前半径，说明边缘大致是圆形的
-            if (Math.abs(distance - radius) < maxRadius * 0.15) {
-              circularPoints++;
-            }
-            totalSamples++;
-            break;
-          }
-        }
-      }
-    }
-  }
-
-  // 如果超过60%的采样点符合圆形特征，认为是圆形logo
-  const circularRatio = totalSamples > 0 ? circularPoints / totalSamples : 0;
-  return circularRatio > 0.6 && aspectRatio > 0.9;
+function cleanName(filename: string) {
+  return path.parse(filename).name.replace(/[（）]/g, '').replace(/^\d+ ?/, '');
 }
 
-// 判断像素是否为白色（允许一定阈值）
-function isWhitePixel(r: number, g: number, b: number, alpha: number, threshold = 10) {
-  return r >= 255 - threshold && g >= 255 - threshold && b >= 255 - threshold || alpha === 0;
+function supported(filename: string) {
+  return /\.(png|webp|jpe?g|svg)$/i.test(filename);
 }
 
-// 检查像素是否在狭窄的白色区域内（只有1~2个像素宽）
-function isInNarrowWhiteRegion(
-  data: Uint8Array,
-  width: number,
-  height: number,
-  x: number,
-  y: number,
-  threshold: number = 10,
-): boolean {
-  // 检查水平方向的连续白色像素数量
-  let horizontalWidth = 1;
-  // 向左检查
-  for (let i = x - 1; i >= 0; i--) {
-    const pixelIndex = (y * width + i) * 4;
-    if (pixelIndex >= data.length) break;
-    const r = data[pixelIndex];
-    const g = data[pixelIndex + 1];
-    const b = data[pixelIndex + 2];
-    if (isWhitePixel(r, g, b, data[pixelIndex + 3], threshold)) {
-      horizontalWidth++;
-    } else {
-      break;
-    }
-  }
-  // 向右检查
-  for (let i = x + 1; i < width; i++) {
-    const pixelIndex = (y * width + i) * 4;
-    if (pixelIndex >= data.length) break;
-    const r = data[pixelIndex];
-    const g = data[pixelIndex + 1];
-    const b = data[pixelIndex + 2];
-    if (isWhitePixel(r, g, b, data[pixelIndex + 3], threshold)) {
-      horizontalWidth++;
-    } else {
-      break;
-    }
-  }
-
-  // 检查垂直方向的连续白色像素数量
-  let verticalWidth = 1;
-  // 向上检查
-  for (let i = y - 1; i >= 0; i--) {
-    const pixelIndex = (i * width + x) * 4;
-    if (pixelIndex >= data.length) break;
-    const r = data[pixelIndex];
-    const g = data[pixelIndex + 1];
-    const b = data[pixelIndex + 2];
-    if (isWhitePixel(r, g, b, data[pixelIndex + 3], threshold)) {
-      verticalWidth++;
-    } else {
-      break;
-    }
-  }
-  // 向下检查
-  for (let i = y + 1; i < height; i++) {
-    const pixelIndex = (i * width + x) * 4;
-    if (pixelIndex >= data.length) break;
-    const r = data[pixelIndex];
-    const g = data[pixelIndex + 1];
-    const b = data[pixelIndex + 2];
-    if (isWhitePixel(r, g, b, data[pixelIndex + 3], threshold)) {
-      verticalWidth++;
-    } else {
-      break;
-    }
-  }
-
-  // 如果水平或垂直方向只有1~2个像素宽，认为是狭窄区域
-  return horizontalWidth <= 2 || verticalWidth <= 2;
+function pixelOffset(width: number, x: number, y: number) {
+  return (y * width + x) * 4;
 }
 
-// 从指定点开始进行 flood fill，填充连续的白色区域为透明
-function floodFillFrom(
-  data: Uint8Array,
-  width: number,
-  height: number,
-  startX: number,
-  startY: number,
-  visited: Set<number>,
-  threshold: number = 10,
-): void {
-  const queue: Array<[number, number]> = [];
-  const startIndex = startY * width + startX;
-  const startPixelIndex = startIndex * 4;
-
-  // 检查起始点是否为白色
-  if (startPixelIndex >= data.length) return;
-  const r = data[startPixelIndex];
-  const g = data[startPixelIndex + 1];
-  const b = data[startPixelIndex + 2];
-
-  if (!isWhitePixel(r, g, b, data[startPixelIndex + 3], threshold) || visited.has(startIndex)) {
-    return;
-  }
-
-  // 如果起始点在狭窄区域内，跳过
-  if (isInNarrowWhiteRegion(data, width, height, startX, startY, threshold)) {
-    return;
-  }
-
-  queue.push([startX, startY]);
-  visited.add(startIndex);
-
-  // BFS flood fill
-  while (queue.length > 0) {
-    const [x, y] = queue.shift()!;
-    const pixelIndex = (y * width + x) * 4;
-
-    if (pixelIndex >= 0 && pixelIndex < data.length) {
-      // 将像素设置为透明
-      data[pixelIndex + 3] = 0; // alpha = 0
-    }
-
-    // 检查四个方向的邻居
-    const directions = [
-      [0, 1], // 下
-      [0, -1], // 上
-      [1, 0], // 右
-      [-1, 0], // 左
-    ];
-
-    for (const [dx, dy] of directions) {
-      const nx = x + dx;
-      const ny = y + dy;
-
-      if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-        const neighborIndex = ny * width + nx;
-        if (!visited.has(neighborIndex)) {
-          const neighborPixelIndex = neighborIndex * 4;
-          if (neighborPixelIndex < data.length) {
-            const r = data[neighborPixelIndex];
-            const g = data[neighborPixelIndex + 1];
-            const b = data[neighborPixelIndex + 2];
-
-            if (isWhitePixel(r, g, b, data[neighborPixelIndex + 3], threshold)) {
-              // 如果邻居在狭窄区域内，跳过
-              if (!isInNarrowWhiteRegion(data, width, height, nx, ny, threshold)) {
-                visited.add(neighborIndex);
-                queue.push([nx, ny]);
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+function isNearWhite(r: number, g: number, b: number, a: number) {
+  return a > ALPHA_THRESHOLD && r >= LIGHT_THRESHOLD && g >= LIGHT_THRESHOLD && b >= LIGHT_THRESHOLD;
 }
 
-// 平滑边缘，减少锯齿效果
-function smoothEdges(data: Uint8Array, width: number, height: number) {
-  const directions = [
-    [0, 1], // 下
-    [0, -1], // 上
-    [1, 0], // 右
-    [-1, 0], // 左
-    [1, 1], // 右下
-    [-1, -1], // 左上
-    [1, -1], // 右上
-    [-1, 1], // 左下
-  ];
-
-  // 创建边缘像素列表（非透明像素周围有透明像素的像素）
-  const edgePixels: Array<[number, number]> = [];
+function alphaBBox(data: Buffer | Uint8Array, width: number, height: number): BBox | null {
+  let left = width;
+  let top = height;
+  let right = -1;
+  let bottom = -1;
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      const pixelIndex = (y * width + x) * 4;
-      if (pixelIndex >= data.length) continue;
-
-      const alpha = data[pixelIndex + 3];
-
-      // 检查非透明像素周围是否有透明像素（边缘像素）
-      if (alpha > 0) {
-        let hasTransparentNeighbor = false;
-        for (const [dx, dy] of directions) {
-          const nx = x + dx;
-          const ny = y + dy;
-          if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-            const neighborIndex = (ny * width + nx) * 4;
-            if (neighborIndex < data.length && data[neighborIndex + 3] === 0) {
-              hasTransparentNeighbor = true;
-              break;
-            }
-          }
-        }
-        if (hasTransparentNeighbor) {
-          edgePixels.push([x, y]);
-        }
+      const index = pixelOffset(width, x, y);
+      if (data[index + 3] > ALPHA_THRESHOLD) {
+        if (x < left) left = x;
+        if (x > right) right = x;
+        if (y < top) top = y;
+        if (y > bottom) bottom = y;
       }
     }
   }
 
-  // 对边缘像素应用渐变透明度，创建平滑过渡
-  for (const [x, y] of edgePixels) {
-    let transparentCount = 0;
-    let totalAlpha = 0;
-    let neighborCount = 0;
+  if (right < left || bottom < top) return null;
+  return { left, top, right: right + 1, bottom: bottom + 1 };
+}
 
-    // 统计周围像素的透明度和非透明像素数量
-    for (const [dx, dy] of directions) {
-      const nx = x + dx;
-      const ny = y + dy;
-      if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-        const neighborIndex = (ny * width + nx) * 4;
-        if (neighborIndex < data.length) {
-          const neighborAlpha = data[neighborIndex + 3];
-          if (neighborAlpha === 0) {
-            transparentCount++;
-          } else {
-            totalAlpha += neighborAlpha;
-          }
-          neighborCount++;
-        }
-      }
-    }
+function floodEdgeConnected(candidate: Uint8Array, width: number, height: number) {
+  const queue = new Int32Array(width * height);
+  let head = 0;
+  let tail = 0;
 
-    if (neighborCount > 0) {
-      const pixelIndex = (y * width + x) * 4;
-      if (pixelIndex < data.length) {
-        // 根据周围透明像素的比例，调整边缘像素的 alpha 值
-        // 透明像素越多，alpha 值越小，创建平滑过渡
-        const transparencyRatio = transparentCount / neighborCount;
-        const originalAlpha = data[pixelIndex + 3];
-        // 根据透明像素比例，减少 alpha 值，但保持一定的可见度
-        const newAlpha = Math.round(originalAlpha * (1 - transparencyRatio * 0.5));
-        data[pixelIndex + 3] = Math.max(newAlpha, originalAlpha * 0.3); // 保持至少 30% 的原始透明度
-      }
-    }
+  const push = (index: number) => {
+    if (candidate[index] !== 1) return;
+    candidate[index] = 2;
+    queue[tail++] = index;
+  };
+
+  for (let x = 0; x < width; x++) {
+    push(x);
+    push((height - 1) * width + x);
+  }
+  for (let y = 0; y < height; y++) {
+    push(y * width);
+    push(y * width + width - 1);
+  }
+
+  while (head < tail) {
+    const index = queue[head++];
+    const x = index % width;
+    const y = Math.floor(index / width);
+
+    if (x > 0) push(index - 1);
+    if (x + 1 < width) push(index + 1);
+    if (y > 0) push(index - width);
+    if (y + 1 < height) push(index + width);
   }
 }
 
-// 从所有边界点开始，使用透明油漆桶填充连续的白色区域
-async function floodFillTransparent(
-  imageBuffer: Buffer,
-  width: number,
-  height: number,
-): Promise<Buffer> {
-  const { data } = await sharp(imageBuffer)
-    .ensureAlpha()
+function clearEdgeLightBackground(image: RawImage) {
+  const { data, width, height } = image;
+  const candidate = new Uint8Array(width * height);
+
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      const index = pixelOffset(width, x, y);
+      if (isNearWhite(data[index], data[index + 1], data[index + 2], data[index + 3])) {
+        candidate[y * width + x] = 1;
+      }
+    }
+  }
+
+  floodEdgeConnected(candidate, width, height);
+
+  let changed = 0;
+  for (let index = 0; index < candidate.length; index++) {
+    if (candidate[index] !== 2) continue;
+    const pixel = index * 4;
+    data[pixel] = 0;
+    data[pixel + 1] = 0;
+    data[pixel + 2] = 0;
+    data[pixel + 3] = 0;
+    changed++;
+  }
+  return changed;
+}
+
+function outerAngleCoverage(image: RawImage, bbox: BBox) {
+  const { data, width, height } = image;
+  const boxWidth = bbox.right - bbox.left;
+  const boxHeight = bbox.bottom - bbox.top;
+  const cx = (bbox.left + bbox.right - 1) / 2;
+  const cy = (bbox.top + bbox.bottom - 1) / 2;
+  const rx = boxWidth / 2;
+  const ry = boxHeight / 2;
+  let hits = 0;
+  const angles = 360;
+
+  for (let degree = 0; degree < angles; degree++) {
+    const theta = degree * Math.PI / 180;
+    const cos = Math.cos(theta);
+    const sin = Math.sin(theta);
+    let hit = false;
+    for (let percent = 72; percent <= 104; percent += 2) {
+      const radius = percent / 100;
+      const x = Math.round(cx + cos * rx * radius);
+      const y = Math.round(cy + sin * ry * radius);
+      if (x < 0 || x >= width || y < 0 || y >= height) continue;
+      if (data[pixelOffset(width, x, y) + 3] > ALPHA_THRESHOLD) {
+        hit = true;
+        break;
+      }
+    }
+    if (hit) hits++;
+  }
+
+  return hits / angles;
+}
+
+function isCircularSeal(image: RawImage) {
+  const bbox = alphaBBox(image.data, image.width, image.height);
+  if (!bbox) return false;
+  const boxWidth = bbox.right - bbox.left;
+  const boxHeight = bbox.bottom - bbox.top;
+  const aspect = Math.min(boxWidth, boxHeight) / Math.max(boxWidth, boxHeight);
+  return aspect >= 0.9 && outerAngleCoverage(image, bbox) >= EDGE_COVERAGE_MIN;
+}
+
+function fillEnclosedTransparency(image: RawImage) {
+  const { data, width, height } = image;
+  const candidate = new Uint8Array(width * height);
+
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      if (data[pixelOffset(width, x, y) + 3] <= ALPHA_THRESHOLD) {
+        candidate[y * width + x] = 1;
+      }
+    }
+  }
+
+  floodEdgeConnected(candidate, width, height);
+
+  let changed = 0;
+  for (let index = 0; index < candidate.length; index++) {
+    if (candidate[index] !== 1) continue;
+    const pixel = index * 4;
+    data[pixel] = 255;
+    data[pixel + 1] = 255;
+    data[pixel + 2] = 255;
+    data[pixel + 3] = 255;
+    changed++;
+  }
+  return changed;
+}
+
+function extractWithPadding(image: RawImage, bbox: BBox) {
+  const boxWidth = bbox.right - bbox.left;
+  const boxHeight = bbox.bottom - bbox.top;
+  const pad = Math.max(2, Math.round(Math.max(boxWidth, boxHeight) * 0.02));
+  const width = boxWidth + pad * 2;
+  const height = boxHeight + pad * 2;
+  const data = Buffer.alloc(width * height * 4);
+
+  for (let y = bbox.top; y < bbox.bottom; y++) {
+    for (let x = bbox.left; x < bbox.right; x++) {
+      const src = pixelOffset(image.width, x, y);
+      const dst = pixelOffset(width, x - bbox.left + pad, y - bbox.top + pad);
+      data[dst] = image.data[src];
+      data[dst + 1] = image.data[src + 1];
+      data[dst + 2] = image.data[src + 2];
+      data[dst + 3] = image.data[src + 3];
+    }
+  }
+
+  return { data, width, height };
+}
+
+function cleanTransparentRgb(data: Buffer | Uint8Array) {
+  for (let index = 0; index < data.length; index += 4) {
+    if (data[index + 3] !== 0) continue;
+    data[index] = 0;
+    data[index + 1] = 0;
+    data[index + 2] = 0;
+  }
+}
+
+async function createSharpInput(filePath: string, ext: string) {
+  const options: sharp.SharpOptions = { failOn: 'none', limitInputPixels: false };
+  if (ext !== '.svg') return sharp(filePath, options);
+
+  const baseMetadata = await sharp(filePath, { ...options, density: 72 }).metadata();
+  const baseMax = Math.max(baseMetadata.width || 0, baseMetadata.height || 0, 1);
+  const density = Math.max(72, Math.min(SVG_MAX_DENSITY, Math.round(72 * WORKING_MAX_SIDE / baseMax)));
+  return sharp(filePath, { ...options, density });
+}
+
+async function loadWorkingImage(filePath: string): Promise<RawImage> {
+  const ext = path.extname(filePath).toLowerCase();
+  const input = await createSharpInput(filePath, ext);
+  const metadata = await input.metadata();
+  const maxSide = Math.max(metadata.width || 0, metadata.height || 0);
+  let pipeline = input.clone().rotate().ensureAlpha();
+
+  if (maxSide > WORKING_MAX_SIDE) {
+    pipeline = pipeline.resize({
+      width: WORKING_MAX_SIDE,
+      height: WORKING_MAX_SIDE,
+      fit: 'inside',
+      withoutEnlargement: true,
+      kernel: sharp.kernel.lanczos3,
+    });
+  }
+
+  const { data, info } = await pipeline.raw().toBuffer({ resolveWithObject: true });
+  return { data, width: info.width, height: info.height };
+}
+
+async function resizeToOutput(image: RawImage) {
+  const maxSide = Math.max(image.width, image.height);
+  const targetMaxSide = Math.max(MIN_OUTPUT_SIDE, Math.min(MAX_OUTPUT_SIDE, maxSide));
+  const scale = targetMaxSide / maxSide;
+  const width = Math.max(1, Math.round(image.width * scale));
+  const height = Math.max(1, Math.round(image.height * scale));
+
+  const { data, info } = await sharp(image.data, {
+    raw: { width: image.width, height: image.height, channels: 4 },
+  })
+    .resize({ width, height, fit: 'fill', kernel: sharp.kernel.lanczos3 })
     .raw()
     .toBuffer({ resolveWithObject: true });
-  const threshold = 10; // 白色检测阈值
-  const visited = new Set<number>(); // 记录已访问的像素
-  for (let x = 0; x < width; x++) {
-    floodFillFrom(data, width, height, x, 0, visited, threshold);
-    floodFillFrom(data, width, height, x, height - 1, visited, threshold);
-  }
-  for (let y = 0; y < height; y++) {
-    floodFillFrom(data, width, height, 0, y, visited, threshold);
-    floodFillFrom(data, width, height, width - 1, y, visited, threshold);
-  }
-  smoothEdges(data, width, height);
-  return await sharp(data, {
-    raw: {
-      width,
-      height,
-      channels: 4,
-    },
+
+  cleanTransparentRgb(data);
+  return { data, width: info.width, height: info.height };
+}
+
+async function processFile(file: fs.Dirent) {
+  const name = cleanName(file.name);
+  if (debug && name !== debug) return;
+
+  const inputPath = path.join(IMPORT_DIR, file.name);
+  const outputPath = path.join(AVATAR_DIR, `${name}.webp`);
+  const image = await loadWorkingImage(inputPath);
+  const clearedPixels = clearEdgeLightBackground(image);
+  const filledPixels = isCircularSeal(image) ? fillEnclosedTransparency(image) : 0;
+  cleanTransparentRgb(image.data);
+
+  const bbox = alphaBBox(image.data, image.width, image.height);
+  if (!bbox) throw new Error('empty image after background cleanup');
+
+  const cropped = extractWithPadding(image, bbox);
+  const resized = await resizeToOutput(cropped);
+
+  await sharp(resized.data, {
+    raw: { width: resized.width, height: resized.height, channels: 4 },
   })
-    .png()
-    .toBuffer();
+    .webp({ lossless: true, effort: 6 })
+    .toFile(outputPath);
+
+  console.log(
+    'Processed',
+    file.name,
+    '->',
+    outputPath,
+    `${resized.width}x${resized.height}`,
+    `cleared=${clearedPixels}`,
+    `filled=${filledPixels}`,
+  );
 }
 
 async function main() {
-  const files = fs.readdirSync('import', { withFileTypes: true });
-  for (const file of files.filter(file => file.isFile())) {
-    let [name, ext] = file.name.split('.');
-    if (!name || !ext) continue;
-    name = name.replace(/[（）]/g, '');
-    if (debug && name !== debug) continue;
+  const files = fs
+    .readdirSync(IMPORT_DIR, { withFileTypes: true })
+    .filter(file => file.isFile() && supported(file.name));
+
+  for (const file of files) {
     queue.add(async () => {
       try {
-        console.log('Processing', file.name, `${files.length - queue.size}/${files.length}`);
-        let image = sharp(`import/${file.name}`);
-
-        // 先去除白色边缘，使用 trim 自动检测边界
-        // background 指定要裁剪的背景色（白色），lineArt 可以更精确地检测边缘
-        let trimmedImage = image
-          .flatten({ background: { r: 255, g: 255, b: 255 } })
-          .trim({
-            background: { r: 255, g: 255, b: 255 }, // 白色背景
-            threshold: 10, // 检测接近白色的像素的阈值（0-255），值越小越敏感
-          });
-
-        let trimmedMetadata = await trimmedImage.metadata();
-        let trimmedWidth = trimmedMetadata.width || 0;
-        let trimmedHeight = trimmedMetadata.height || 0;
-        const size = Math.max(trimmedWidth, trimmedHeight); // 使用最大边作为正方形边长
-
-        // 检测是否为圆形logo
-        const trimmedBuffer = await trimmedImage.ensureAlpha().toBuffer();
-        const isCircular = await isCircularLogo(trimmedBuffer, trimmedWidth, trimmedHeight);
-
-        // 将裁剪后的图像调整到正方形，居中放置，透明部分用白色填充
-        let processedImage = trimmedImage.resize(size, size, {
-          fit: 'contain',
-          background: { r: 255, g: 255, b: 255, alpha: 1 }, // 白色背景填充透明部分
-        });
-
-        // 如果是圆形logo，应用圆形遮罩
-        if (isCircular) {
-          const radius = size / 2;
-
-          // 创建圆形遮罩 SVG
-          const maskSvg = `
-            <svg width="${size}" height="${size}">
-              <circle cx="${radius}" cy="${radius}" r="${radius}" fill="white"/>
-            </svg>
-          `;
-
-          // 创建圆形遮罩图像
-          const mask = sharp(Buffer.from(maskSvg))
-            .resize(size, size)
-            .toFormat('png');
-
-          // 应用圆形遮罩，使圆形外的部分透明，圆形内的透明部分保持白色
-          processedImage = processedImage.composite([
-            {
-              input: await mask.toBuffer(),
-              blend: 'dest-in',
-            },
-          ]);
-        } else {
-          // 对于非圆形logo，使用透明油漆桶从(0,0)填充白色背景为透明
-          // 直接使用 size，因为 resize 后的尺寸就是 size x size
-          const processedBuffer = await processedImage.ensureAlpha().toBuffer();
-          const floodFilledBuffer = await floodFillTransparent(
-            processedBuffer,
-            size,
-            size,
-          );
-          // sharp 会自动识别 PNG buffer 的尺寸
-          processedImage = sharp(floodFilledBuffer);
-        }
-
-        // 保存处理后的图像
-        await processedImage.toFormat('webp').toFile(`avatars/${name.replace(/^\d+ ?/, '')}.webp`);
+        await processFile(file);
       } catch (e) {
         console.error(file.name, e);
       }
     });
   }
+
   queue.start();
+  await queue.onIdle();
 }
 
 main().catch(console.error);
