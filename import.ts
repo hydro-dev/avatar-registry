@@ -1,6 +1,9 @@
 import sharp from 'sharp';
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
+import { execFile } from 'child_process';
+import { promisify } from 'util';
 import PQueue from 'p-queue';
 
 const debug = process.argv[2]?.replace(/[（）]/g, '');
@@ -15,6 +18,7 @@ const SVG_MAX_DENSITY = 4096;
 const ALPHA_THRESHOLD = 8;
 const LIGHT_THRESHOLD = 245;
 const EDGE_COVERAGE_MIN = 0.72;
+const execFileAsync = promisify(execFile);
 
 type RawImage = {
   data: Buffer;
@@ -45,7 +49,12 @@ function isNearWhite(r: number, g: number, b: number, a: number) {
   return a > ALPHA_THRESHOLD && r >= LIGHT_THRESHOLD && g >= LIGHT_THRESHOLD && b >= LIGHT_THRESHOLD;
 }
 
-function alphaBBox(data: Buffer | Uint8Array, width: number, height: number): BBox | null {
+function alphaBBox(
+  data: Buffer | Uint8Array,
+  width: number,
+  height: number,
+  threshold = ALPHA_THRESHOLD,
+): BBox | null {
   let left = width;
   let top = height;
   let right = -1;
@@ -54,7 +63,7 @@ function alphaBBox(data: Buffer | Uint8Array, width: number, height: number): BB
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const index = pixelOffset(width, x, y);
-      if (data[index + 3] > ALPHA_THRESHOLD) {
+      if (data[index + 3] > threshold) {
         if (x < left) left = x;
         if (x > right) right = x;
         if (y < top) top = y;
@@ -168,6 +177,15 @@ function isCircularSeal(image: RawImage) {
   return aspect >= 0.9 && outerAngleCoverage(image, bbox) >= EDGE_COVERAGE_MIN;
 }
 
+function isStrictCircularSeal(image: RawImage) {
+  const bbox = alphaBBox(image.data, image.width, image.height, 128);
+  if (!bbox) return false;
+  const boxWidth = bbox.right - bbox.left;
+  const boxHeight = bbox.bottom - bbox.top;
+  const aspect = Math.min(boxWidth, boxHeight) / Math.max(boxWidth, boxHeight);
+  return aspect >= 0.97 && outerAngleCoverage(image, bbox) >= 0.9;
+}
+
 function fillEnclosedTransparency(image: RawImage) {
   const { data, width, height } = image;
   const candidate = new Uint8Array(width * height);
@@ -259,8 +277,8 @@ async function loadWorkingImage(filePath: string): Promise<RawImage> {
 
 async function resizeToOutput(image: RawImage) {
   const maxSide = Math.max(image.width, image.height);
-  const targetMaxSide = Math.max(MIN_OUTPUT_SIDE, Math.min(MAX_OUTPUT_SIDE, maxSide));
-  const scale = targetMaxSide / maxSide;
+  const targetSide = Math.max(MIN_OUTPUT_SIDE, Math.min(MAX_OUTPUT_SIDE, maxSide));
+  const scale = targetSide / maxSide;
   const width = Math.max(1, Math.round(image.width * scale));
   const height = Math.max(1, Math.round(image.height * scale));
 
@@ -271,8 +289,87 @@ async function resizeToOutput(image: RawImage) {
     .raw()
     .toBuffer({ resolveWithObject: true });
 
+  const canvas = Buffer.alloc(targetSide * targetSide * 4);
+  const left = Math.floor((targetSide - info.width) / 2);
+  const top = Math.floor((targetSide - info.height) / 2);
+
+  for (let y = 0; y < info.height; y++) {
+    for (let x = 0; x < info.width; x++) {
+      const src = pixelOffset(info.width, x, y);
+      const dst = pixelOffset(targetSide, x + left, y + top);
+      canvas[dst] = data[src];
+      canvas[dst + 1] = data[src + 1];
+      canvas[dst + 2] = data[src + 2];
+      canvas[dst + 3] = data[src + 3];
+    }
+  }
+
   cleanTransparentRgb(data);
-  return { data, width: info.width, height: info.height };
+  cleanTransparentRgb(canvas);
+  return { data: canvas, width: targetSide, height: targetSide };
+}
+
+function clipOutsideEllipse(image: RawImage) {
+  const bbox = alphaBBox(image.data, image.width, image.height, 128);
+  if (!bbox) return 0;
+
+  const cx = (bbox.left + bbox.right - 1) / 2;
+  const cy = (bbox.top + bbox.bottom - 1) / 2;
+  const rx = (bbox.right - bbox.left) / 2 + 0.5;
+  const ry = (bbox.bottom - bbox.top) / 2 + 0.5;
+  const edgeScale = Math.min(rx, ry);
+  let changed = 0;
+
+  for (let y = 0; y < image.height; y++) {
+    for (let x = 0; x < image.width; x++) {
+      const index = pixelOffset(image.width, x, y);
+      const alpha = image.data[index + 3];
+      if (alpha === 0) continue;
+
+      const dx = (x - cx) / rx;
+      const dy = (y - cy) / ry;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      const coverage = Math.max(0, Math.min(1, (1 - distance) * edgeScale + 0.5));
+      const clippedAlpha = Math.round(alpha * coverage);
+      if (clippedAlpha === alpha) continue;
+
+      image.data[index + 3] = clippedAlpha;
+      if (clippedAlpha === 0) {
+        image.data[index] = 0;
+        image.data[index + 1] = 0;
+        image.data[index + 2] = 0;
+      }
+      changed++;
+    }
+  }
+
+  return changed;
+}
+
+async function writeExactWebp(image: RawImage, outputPath: string) {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'avatar-import-'));
+  const tempPng = path.join(tempDir, 'input.png');
+
+  try {
+    await sharp(image.data, {
+      raw: { width: image.width, height: image.height, channels: 4 },
+    })
+      .png()
+      .toFile(tempPng);
+
+    await execFileAsync('magick', [
+      tempPng,
+      '-define',
+      'webp:lossless=true',
+      '-define',
+      'webp:exact=true',
+      '-define',
+      'webp:method=6',
+      outputPath,
+    ]);
+  } finally {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
 }
 
 async function processFile(file: fs.Dirent) {
@@ -282,6 +379,7 @@ async function processFile(file: fs.Dirent) {
   const inputPath = path.join(IMPORT_DIR, file.name);
   const outputPath = path.join(AVATAR_DIR, `${name}.webp`);
   const image = await loadWorkingImage(inputPath);
+  const strictCircularSeal = isStrictCircularSeal(image);
   const clearedPixels = clearEdgeLightBackground(image);
   const filledPixels = isCircularSeal(image) ? fillEnclosedTransparency(image) : 0;
   cleanTransparentRgb(image.data);
@@ -291,12 +389,9 @@ async function processFile(file: fs.Dirent) {
 
   const cropped = extractWithPadding(image, bbox);
   const resized = await resizeToOutput(cropped);
+  const clippedPixels = strictCircularSeal ? clipOutsideEllipse(resized) : 0;
 
-  await sharp(resized.data, {
-    raw: { width: resized.width, height: resized.height, channels: 4 },
-  })
-    .webp({ lossless: true, effort: 6 })
-    .toFile(outputPath);
+  await writeExactWebp(resized, outputPath);
 
   console.log(
     'Processed',
@@ -306,6 +401,7 @@ async function processFile(file: fs.Dirent) {
     `${resized.width}x${resized.height}`,
     `cleared=${clearedPixels}`,
     `filled=${filledPixels}`,
+    `clipped=${clippedPixels}`,
   );
 }
 
