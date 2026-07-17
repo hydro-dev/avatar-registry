@@ -404,7 +404,7 @@ export default function LogoRegistry({ logos }: LogoRegistryProps) {
                 <ol type="a">
                   <li>尺寸必须大于 512 像素 x 512 像素；</li>
                   <li>背景必须为透明底色，不可使用纯色背景；</li>
-                  <li>如果内部有镂空，则必须用白色填充；</li>
+                  <li>如果 Logo 内部存在透明镂空区域，且在深色背景下会导致主体不清晰或识别困难，请提供内部白色填充的版本；</li>
                   <li>如果 logo 配有深色文字，则文字部分应当有白边描边。</li>
                 </ol>
               </li>
