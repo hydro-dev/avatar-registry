@@ -5,7 +5,9 @@
     "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev --host 0.0.0.0",
     "build": "ASTRO_TELEMETRY_DISABLED=1 astro build",
     "preview": "ASTRO_TELEMETRY_DISABLED=1 astro preview --host 0.0.0.0",
-    "topng": "node -r @hydrooj/register topng.ts",
+    "topng": "yarn topng:name",
+    "topng:name": "node -r @hydrooj/register topng.ts name",
+    "topng:id": "node -r @hydrooj/register topng.ts id",
     "import": "node -r @hydrooj/register import.ts",
     "deploy": "node -r @hydrooj/register deploy.ts"
   },

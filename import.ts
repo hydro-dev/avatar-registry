@@ -6,7 +6,7 @@ import { execFile } from 'child_process';
 import { promisify } from 'util';
 import PQueue from 'p-queue';
 
-const debug = process.argv[2]?.replace(/[（）]/g, '');
+const debug = process.argv[2]?.replace(/[（）()]/g, '');
 const queue = new PQueue({ concurrency: 1, autoStart: false });
 
 const IMPORT_DIR = 'import';
@@ -44,7 +44,7 @@ type AlphaComponent = {
 };
 
 function cleanName(filename: string) {
-  return path.parse(filename).name.replace(/[（）]/g, '').replace(/^\d+ ?/, '');
+  return path.parse(filename).name.replace(/[（）()]/g, '').replace(/^\d+ ?/, '');
 }
 
 function supported(filename: string) {

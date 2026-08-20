@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 export type Logo = {
   name: string;
+  aliases: string[];
   src: string;
   file: string;
   width: number | null;
@@ -94,6 +95,7 @@ export default function LogoRegistry({ logos }: LogoRegistryProps) {
   const [isUploadInfoOpen, setIsUploadInfoOpen] = useState(true);
   const [copyStatus, setCopyStatus] = useState<CopyStatus>('idle');
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const detailCloseButtonRef = useRef<HTMLButtonElement>(null);
   const uploadDialogRef = useRef<HTMLDialogElement>(null);
   const isInitialUploadInfoRef = useRef(true);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -101,11 +103,7 @@ export default function LogoRegistry({ logos }: LogoRegistryProps) {
   const visibleLogos = useMemo(() => {
     const normalizedQuery = normalize(query);
     if (!normalizedQuery) return logos;
-    return logos.filter((logo) => {
-      const name = normalize(logo.name);
-      const file = normalize(logo.file);
-      return name.includes(normalizedQuery) || file.includes(normalizedQuery);
-    });
+    return logos.filter(logo => logo.aliases.some(a => normalize(a).includes(normalizedQuery)));
   }, [logos, query]);
 
   useEffect(() => {
@@ -141,6 +139,7 @@ export default function LogoRegistry({ logos }: LogoRegistryProps) {
 
     if (selectedLogo) {
       if (!dialog.open) dialog.showModal();
+      detailCloseButtonRef.current?.focus();
       return;
     }
 
@@ -326,6 +325,11 @@ export default function LogoRegistry({ logos }: LogoRegistryProps) {
               <div className="detail-title-block">
                 <p className="detail-file">Logo Detail - {selectedLogo.file}</p>
                 <h2 id="detail-title">{selectedLogo.name}</h2>
+                {selectedLogo.aliases.length > 0 && (
+                  <ul className="detail-aliases">
+                    {selectedLogo.aliases.map(alias => <li key={alias}>{alias}</li>)}
+                  </ul>
+                )}
                 {hasLowLogoResolution(selectedLogo) && (
                   <button className="logo-quality-warning" type="button" onClick={openUploadInfo}>
                     当前 logo 尺寸 {formatLogoSize(selectedLogo)} 不够清晰，技术组建议提供新 logo。
@@ -345,7 +349,7 @@ export default function LogoRegistry({ logos }: LogoRegistryProps) {
                 >
                   <Upload className="theme-icon" aria-hidden="true" />
                 </button>
-                <button className="close-button" type="button" aria-label="关闭详情" onClick={closeDetail}>
+                <button ref={detailCloseButtonRef} className="close-button" type="button" aria-label="关闭详情" onClick={closeDetail}>
                   <X className="theme-icon" aria-hidden="true" />
                 </button>
               </div>
@@ -935,6 +939,15 @@ h1 {
   border: 1px solid var(--line);
   border-radius: 8px;
   box-shadow: var(--shadow);
+}
+
+.detail-aliases {
+  display: grid;
+  gap: 2px;
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.4;
 }
 
 .upload-dialog {

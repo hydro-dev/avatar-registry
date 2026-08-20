@@ -1,35 +1,31 @@
 ---
+import { createHash } from 'node:crypto';
+import fs from 'node:fs';
 import { join } from 'node:path';
 import sharp from 'sharp';
+import { loadAvatarRegistry } from '../avatarRegistry';
 import LogoRegistry, { type Logo } from '../components/LogoRegistry';
-
-const logoModules = import.meta.glob<string>('../../avatars/*.webp', {
-  eager: true,
-  import: 'default',
-  query: '?url',
-});
 
 const collator = new Intl.Collator('zh-Hans-CN', {
   numeric: true,
   sensitivity: 'base',
 });
 
-const logos: Logo[] = (
-  await Promise.all(
-    Object.entries(logoModules).map(async ([path, src]) => {
-      const file = path.split('/').pop() ?? '';
-      const name = file.replace(/\.webp$/i, '');
-      const metadata = await sharp(join(process.cwd(), 'avatars', file)).metadata();
-      return {
-        name,
-        src,
-        file,
-        width: metadata.width ?? null,
-        height: metadata.height ?? null,
-      };
-    }),
-  )
-).sort((left, right) => collator.compare(left.name, right.name));
+const registry = loadAvatarRegistry();
+const logos: Logo[] = (await Promise.all(fs.readdirSync('avatars').map(async (file) => {
+  const filename = file.replace(/\.webp$/i, '');
+  const aliases = registry.get(filename) ?? [];
+  const contents = await fs.promises.readFile(join(process.cwd(), 'avatars', file));
+  const { width = null, height = null } = await sharp(contents).metadata();
+  return {
+    name: aliases[0] ?? filename,
+    aliases,
+    src: `/org/${encodeURIComponent(file)}?build=${createHash('sha256').update(contents).digest('hex').slice(0, 12)}`,
+    file,
+    width,
+    height,
+  };
+}))).sort((left, right) => collator.compare(left.name, right.name));
 ---
 
 <!doctype html>
