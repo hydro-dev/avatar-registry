@@ -521,6 +521,103 @@ function clipOutsideEllipse(image: RawImage, explicitBBox?: BBox, inset = 0) {
   return changed;
 }
 
+export function removeWhiteMatteFromEllipseEdge(image: RawImage, bbox: BBox) {
+  const cx = (bbox.left + bbox.right - 1) / 2;
+  const cy = (bbox.top + bbox.bottom - 1) / 2;
+  const rx = (bbox.right - bbox.left) / 2;
+  const ry = (bbox.bottom - bbox.top) / 2;
+  const source = Buffer.from(image.data);
+  const exterior = new Uint8Array(image.width * image.height);
+  const recovered = Buffer.alloc(image.data.length);
+  for (let index = 0; index < exterior.length; index++) {
+    if (source[index * 4 + 3] <= ALPHA_THRESHOLD) exterior[index] = 1;
+  }
+
+  for (let y = bbox.top; y < bbox.bottom; y++) {
+    for (let x = bbox.left; x < bbox.right; x++) {
+      const dx = (x - cx) / rx;
+      const dy = (y - cy) / ry;
+      const radius = Math.sqrt(dx * dx + dy * dy);
+      if (radius < 0.98) continue;
+
+      const index = pixelOffset(image.width, x, y);
+      const alpha = source[index + 3];
+      // Existing transparency already describes edge coverage.
+      if (alpha !== 255) continue;
+
+      // Search for a stable rim colour. A fixed depth can land on the inner
+      // white ring of a thin outline. Read the original pixels even when a
+      // reference lies in the band being cleaned.
+      let foreground: number[] | null = null;
+      let foregroundContrast = 0;
+      for (const startRadius of [0.96, 0.965, 0.97, 0.975, 0.98]) {
+        const samples: number[][] = [];
+        for (const offset of [0, 0.005, 0.01]) {
+          const sampleRadius = startRadius + offset;
+          const sx = Math.round(cx + (x - cx) * sampleRadius / radius);
+          const sy = Math.round(cy + (y - cy) * sampleRadius / radius);
+          const sample = pixelOffset(image.width, sx, sy);
+          if (source[sample + 3] !== 255) break;
+          samples.push(Array.from(source.subarray(sample, sample + 3)));
+        }
+        if (samples.length !== 3) continue;
+        const colour = [0, 1, 2].map(channel =>
+          samples.map(sample => sample[channel]).sort((a, b) => a - b)[1],
+        );
+        if (Math.min(...colour) >= LIGHT_THRESHOLD) continue;
+        const matchingSamples = samples.filter(sample => sample.every((value, channel) =>
+          Math.abs(value - colour[channel]) <= 24,
+        ));
+        if (matchingSamples.length < 2) continue;
+        // Prefer a stable coloured segment over a near-white inner ring or
+        // the partially blended fringe itself.
+        const contrast = colour.reduce((sum, value) => sum + (255 - value) ** 2, 0);
+        if (contrast <= foregroundContrast) continue;
+        foreground = colour;
+        foregroundContrast = contrast;
+      }
+      if (!foreground) continue;
+
+      // Fit C = F*a + 255*(1-a), and only unmatte colours that match that
+      // white-to-rim blend. Leave artwork and uncertain samples untouched.
+      let numerator = 0;
+      let denominator = 0;
+      for (let channel = 0; channel < 3; channel++) {
+        const distanceFromWhite = 255 - foreground[channel];
+        numerator += (255 - source[index + channel]) * distanceFromWhite;
+        denominator += distanceFromWhite * distanceFromWhite;
+      }
+      const matteAlpha = Math.max(0, Math.min(1, numerator / denominator));
+      if (matteAlpha >= 0.98) continue;
+      // Lossy chroma subsampling can strongly shift JPEG edge colours.
+      // Bound this allowance with the exterior-connectivity check below.
+      if (foreground.some((value, channel) =>
+        Math.abs(source[index + channel] - (value * matteAlpha + 255 * (1 - matteAlpha))) > 64,
+      )) continue;
+
+      exterior[y * image.width + x] = 1;
+      const unmattedAlpha = Math.round(alpha * matteAlpha);
+      for (let channel = 0; channel < 3; channel++) {
+        recovered[index + channel] = unmattedAlpha > 0 ? foreground[channel] : 0;
+      }
+      recovered[index + 3] = unmattedAlpha;
+    }
+  }
+
+  // Follow the actual white fringe from the exterior, including thick or
+  // uneven compression halos. Solid rim pixels stop the flood, protecting
+  // enclosed white artwork without shrinking the geometric outline.
+  floodEdgeConnected(exterior, image.width, image.height);
+  let changed = 0;
+  for (let pixel = 0; pixel < exterior.length; pixel++) {
+    const index = pixel * 4;
+    if (exterior[pixel] !== 2 || source[index + 3] !== 255) continue;
+    recovered.copy(image.data, index, index, index + 4);
+    changed++;
+  }
+  return changed;
+}
+
 async function writeExactWebp(image: RawImage, outputPath: string) {
   if (image.width !== image.height) {
     throw new Error(`refusing to write non-square avatar: ${image.width}x${image.height}`);
@@ -561,19 +658,11 @@ async function processFile(file: fs.Dirent) {
   const clearedPixels = clearEdgeLightBackground(image);
   const filledPixels = fillEnclosedTransparency(image);
   const ellipseSealBBox = strictEllipseSealBBox(image);
-  const ellipseSealInset = ellipseSealBBox
-    ? Math.max(
-      1,
-      Math.round(
-        Math.min(
-          ellipseSealBBox.right - ellipseSealBBox.left,
-          ellipseSealBBox.bottom - ellipseSealBBox.top,
-        ) * 0.008,
-      ),
-    )
+  const unmattedPixels = ellipseSealBBox && clearedPixels
+    ? removeWhiteMatteFromEllipseEdge(image, ellipseSealBBox)
     : 0;
   const clippedPixels = ellipseSealBBox
-    ? clipOutsideEllipse(image, ellipseSealBBox, ellipseSealInset)
+    ? clipOutsideEllipse(image, ellipseSealBBox)
     : 0;
   cleanTransparentRgb(image.data);
 
@@ -596,6 +685,7 @@ async function processFile(file: fs.Dirent) {
     `cleared=${clearedPixels}`,
     `filled=${filledPixels}`,
     `clipped=${clippedPixels}`,
+    `unmatted=${unmattedPixels}`,
   );
 }
 
@@ -618,4 +708,4 @@ async function main() {
   await queue.onIdle();
 }
 
-main().catch(console.error);
+if (require.main === module) main().catch(console.error);
