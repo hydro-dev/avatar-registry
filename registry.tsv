@@ -23,9 +23,9 @@
 安阳工学院	安阳工学院	3741	Anyang Institute of Technology
 安阳师范学院	安阳师范学院	3694	Anyang Normal University
 鞍山师范学院	鞍山师范学院	G22
-澳门城市大学	澳门城市大学	25000	City University of Macau
+澳门城市大学	澳门城市大学	15498	City University of Macau
 澳门大学	澳门大学	2406	University of Macau
-澳门科技大学	澳门科技大学	8283	Macau University of Science and Technology
+澳门科技大学	澳门科技大学	8414	Macau University of Science and Technology
 白城师范学院	白城师范学院	G23
 蚌埠学院	蚌埠学院	8743	Bengbu University
 蚌埠医科大学	蚌埠医科大学	G24
@@ -93,7 +93,7 @@
 巢湖学院	巢湖学院	G53
 朝阳师范学院	朝阳师范学院	G54
 成都大学	成都大学	3128	Chengdu University
-成都东软学院	成都东软学院	2964	Chengdu Neusoft Institute of Information
+成都东软学院	成都东软学院	2964	Chengdu Neusoft University
 成都工业学院	成都工业学院	6760	Chengdu Technological University
 成都工业职业技术学院	成都工业职业技术学院	G55
 成都航空职业技术大学	成都航空职业技术大学	G56
@@ -147,7 +147,7 @@
 大连交通大学	大连交通大学	2800	Dalian Jiaotong University
 大连科技学院	大连科技学院	7246	Dalian Institute of Science and Technology
 大连理工大学	大连理工大学	357	Dalian University of Technology
-大连理工大学盘锦校区	大连理工大学盘锦校区	11497	Panjin Campus of Dalian University of Technology
+大连理工大学盘锦校区	大连理工大学盘锦校区	11496	Panjin Campus of Dalian University of Technology
 大连民族大学	大连民族大学	2806	Dalian Minzu University
 大连外国语大学	大连外国语大学	14187	Dalian University of Foreign Languages
 大连医科大学	大连医科大学	G75
@@ -178,7 +178,7 @@
 福建农林大学	福建农林大学	4053	Fujian Agriculture and Forestry University
 福建商学院	福建商学院	25829	Fujian Business University
 福建师范大学	福建师范大学	575	Fujian Normal University
-福建师范大学协和学院	福建师范大学协和学院	36342	Concord University College Fujian Normal University
+福建师范大学协和学院	福建师范大学协和学院	26851	Concord University College Fujian Normal University
 福建医科大学	福建医科大学	14470	Fujian Medical University
 福建中医药大学	福建中医药大学	G84
 福州大学	福州大学	585	Fuzhou University
@@ -211,7 +211,7 @@
 广东石油化工学院	广东石油化工学院	6726	Guangdong University of Petrochemical Technology
 广东水利电力职业技术学院	广东水利电力职业技术学院	G90
 广东外语外贸大学	广东外语外贸大学	2776	Guangdong University of Foreign Studies
-广东外语外贸大学南国商学院	广东外语外贸大学南国商学院	36302	Guangdong University of Foreign Studies South China Business College
+广东外语外贸大学南国商学院	广东外语外贸大学南国商学院	26803	South China Business College Guangdong University of Foreign Studies
 广东文艺职业学院	广东文艺职业学院	G91
 广东药科大学	广东药科大学	8295	Guangdong Pharmaceutical University
 广东医科大学	广东医科大学	24380	Guangdong Medical University
@@ -222,7 +222,7 @@
 广西科技大学	广西科技大学	10268	Guangxi University of Science and Technology
 广西科技师范学院	广西科技师范学院	26355	Guangxi Science and Technology Normal University
 广西民族大学	广西民族大学	7748	Guangxi Minzu University
-广西民族大学相思湖学院	广西民族大学相思湖学院	26356	Xiangsihu College of GuangXi Minzu University
+广西民族大学相思湖学院	广西民族大学相思湖学院	26356	Xiangsihu College of Guangxi Minzu University
 广西民族师范学院	广西民族师范学院	G95
 广西师范大学	广西师范大学	9196	Guangxi Normal University
 广西外国语学院	广西外国语学院	10988	Guangxi University of Foreign Languages
@@ -244,14 +244,14 @@
 广州铁路职业技术学院	广州铁路职业技术学院	G101
 广州新华学院	广州新华学院	13091	Guangzhou Xinhua University
 广州医科大学	广州医科大学	G102
-广州应用科技学院	广州应用科技学院	36511	Guangzhou College of Applied Science and Technology
+广州应用科技学院	广州应用科技学院	27021	Guangzhou College of Applied Science and Technology
 广州中医药大学	广州中医药大学	10078	Guangzhou University of Chinese Medicine
 贵阳人文科技学院	贵阳人文科技学院	26366	Guiyang Institute of Humanities and Technology
 贵阳学院	贵阳学院	10282	Guiyang University
-贵州财经大学	贵州财经大学	25897	GuiZhou University of Finance and Economics
+贵州财经大学	贵州财经大学	25897	Guizhou University of Finance and Economics
 贵州大学	贵州大学	4593	Guizhou University
 贵州工程应用技术学院	贵州工程应用技术学院	8683	Guizhou University of Engineering Science
-贵州理工学院	贵州理工学院	36500	Guizhou Institute of Technology
+贵州理工学院	贵州理工学院	27010	Guizhou Institute of Technology
 贵州民族大学	贵州民族大学	10094	Guizhou Minzu University
 贵州商学院	贵州商学院	10089	Guizhou University of Commerce
 贵州师范大学	贵州师范大学	8677	Guizhou Normal University
@@ -271,7 +271,7 @@
 哈尔滨工业大学	哈尔滨工业大学	639	Harbin Institute of Technology
 哈尔滨工业大学深圳	哈尔滨工业大学（深圳）	9167	Harbin Institute of Technology, Shenzhen
 哈尔滨工业大学威海	哈尔滨工业大学（威海）	2918	Harbin Institute of Technology, Weihai
-哈尔滨广厦学院	哈尔滨广厦学院	7254	Harbin GuangSha College
+哈尔滨广厦学院	哈尔滨广厦学院	7254	Harbin Guangsha College
 哈尔滨华德学院	哈尔滨华德学院	2797	Harbin Huade University
 哈尔滨建筑科技职业大学	哈尔滨建筑科技职业大学	G107
 哈尔滨剑桥学院	哈尔滨剑桥学院	14574	Harbin Cambridge University
@@ -279,12 +279,12 @@
 哈尔滨理工大学威海校区	哈尔滨理工大学威海校区	10049	Harbin University of Science and Technology, Wei Hai
 哈尔滨商业大学	哈尔滨商业大学	2823	Harbin University of Commerce
 哈尔滨师范大学	哈尔滨师范大学	2824	Harbin Normal University
-哈尔滨石油学院	哈尔滨石油学院	36461	Harbin Institute of Petroleum
+哈尔滨石油学院	哈尔滨石油学院	26971	Harbin Institute of Petroleum
 哈尔滨体育学院	哈尔滨体育学院	G108
 哈尔滨信息工程学院	哈尔滨信息工程学院	12792	Harbin Institute of Information Technology
 哈尔滨学院	哈尔滨学院	2903	Harbin University
 哈尔滨医科大学	哈尔滨医科大学	G109
-海南比勒费尔德应用科学大学	海南比勒费尔德应用科学大学	36502	Hainan Bielefeld University of Applied Sciences
+海南比勒费尔德应用科学大学	海南比勒费尔德应用科学大学	27012	Hainan Bielefeld University of Applied Sciences
 海南大学	海南大学	6720	Hainan University
 海南经贸职业大学	海南经贸职业大学	G110
 海南热带海洋学院	海南热带海洋学院	9285	Hainan Tropical Ocean University
@@ -349,7 +349,7 @@
 河南职业技术学院	河南职业技术学院	G131
 河南中医药大学	河南中医药大学	G132
 河套学院	河套学院	G133
-河西学院	河西学院	15268	HeXi University
+河西学院	河西学院	15268	Hexi University
 菏泽学院	菏泽学院	10273	Heze University
 贺州学院	贺州学院	11079	Hezhou University
 黑河学院	黑河学院	6211	Heihe University
@@ -380,7 +380,7 @@
 湖北师范大学	湖北师范大学	4721	Hubei Normal University
 湖北文理学院	湖北文理学院	12695	Hubei University of Arts and Science
 湖北中医药大学	湖北中医药大学	11083	Hubei University of Chinese Medicine
-湖南财政经济学院	湖南财政经济学院	3157	Hunan University of Finance and Economics
+湖南财政经济学院	湖南财政经济学院	3157	Hunan College of Finance and Economics
 湖南城市学院	湖南城市学院	3156	Hunan City University
 湖南大学	湖南大学	680	Hunan University
 湖南第一师范学院	湖南第一师范学院	15927	Hunan First Normal University
@@ -393,8 +393,7 @@
 湖南科技大学	湖南科技大学	4606	Hunan University of Science and Technology
 湖南科技学院	湖南科技学院	3162	Hunan University of Science and Engineering
 湖南科技职业学院	湖南科技职业学院	5242	Hunan Vocational College of Science and Technology
-湖南理工大学	湖南理工大学	G141
-湖南理工学院	湖南理工学院	3159	Hunan Institute of Science and Technology
+湖南理工大学	湖南理工大学	3159	Hunan Institute of Science and Technology
 湖南农业大学	湖南农业大学	3059	Hunan Agricultural University
 湖南农业大学东方科技学院	湖南农业大学东方科技学院	5445	Orient Science and Technology College of Hunan Agricultural University
 湖南女子学院	湖南女子学院	G142
@@ -406,7 +405,7 @@
 湖州学院	湖州学院	20152	Huzhou College
 华北电力大学	华北电力大学	1346	North China Electric Power University
 华北电力大学保定	华北电力大学（保定）	26327	North China Electric Power University (Baoding)
-华北科技学院	华北科技学院	6054	North China Institute of Science and Technology
+华北科技学院	华北科技学院（已更名为应急管理大学）	6054	North China Institute of Science and Technology
 华北理工大学	华北理工大学	9211	North China University of Science and Technology
 华北水利水电大学	华北水利水电大学	8150	North China University of Water Resources and Electric Power
 华东交通大学	华东交通大学	3111	East China Jiaotong University
@@ -435,7 +434,7 @@
 黄山学院	黄山学院	3151	Huangshan University
 惠州学院	惠州学院	6735	Huizhou University
 吉利学院	吉利学院	24573	Geely University of China
-吉林财经大学	吉林财经大学	2815	JiLin University of Finance and Economics
+吉林财经大学	吉林财经大学	2815	Jilin University of Finance and Economics
 吉林大学	吉林大学	944	Jilin University
 吉林工程技术师范学院	吉林工程技术师范学院	G149
 吉林工商学院	吉林工商学院	5557	Jilin Business and Technology College
@@ -447,7 +446,7 @@
 吉林师范大学	吉林师范大学	2808	Jilin Normal University
 吉林师范大学博达学院	吉林师范大学博达学院	7339	Boda College of Jilin Normal University
 吉林体育学院	吉林体育学院	G152
-吉林外国语大学	吉林外国语大学	36356	Jilin International Studies University
+吉林外国语大学	吉林外国语大学	26865	Jilin International Studies University
 吉林艺术学院	吉林艺术学院	G153
 吉首大学	吉首大学	3171	Jishou University
 集美大学	集美大学	4064	Jimei University
@@ -478,11 +477,11 @@
 江西服装学院	江西服装学院	26319	Jiangxi Institute of Fashion Technology
 江西工程学院	江西工程学院	13718	Jiangxi University of Engineering
 江西工程职业学院	江西工程职业学院	25801	Jiangxi Engineering Vocational College
-江西工商职业技术学院	江西工商职业技术学院	25797	Jiangxi Technology Business Polytechnic
+江西工商职业技术学院	江西工商职业技术学院	25797	Jiangxi Business Technology Institute
 江西工业工程职业技术学院	江西工业工程职业技术学院	G160
 江西警察学院	江西警察学院	13699	Jiangxi Police Institute
 江西科技师范大学	江西科技师范大学	G161
-江西科技学院	江西科技学院	10090	Jiangxi University of Technology
+江西科技学院	江西科技学院	10090	Jiangxi Institute of Technology
 江西理工大学	江西理工大学	4039	Jiangxi University of Science and Technology
 江西理工大学南昌校区	江西理工大学南昌校区	9255	Jiangxi University of Science and Technology (Nanchang Campus)
 江西农业大学	江西农业大学	7797	Jiangxi Agricultural University
@@ -500,7 +499,7 @@
 锦州医科大学	锦州医科大学	G170
 晋中学院	晋中学院	G171
 荆州理工职业学院	荆州理工职业学院	G172
-荆州学院	荆州学院	26463	Jingzhou University
+荆州学院	荆州学院	26463	Jingzhou College
 井冈山大学	井冈山大学	10934	Jinggangshan University
 景德镇陶瓷大学	景德镇陶瓷大学	22165	Jingdezhen Ceramic University
 景德镇艺术职业大学	景德镇艺术职业大学	26329	Jingdezhen Vocational University of Art
@@ -509,7 +508,7 @@
 开封大学	开封大学	G173
 凯里学院	凯里学院	25866	Kaili University
 昆明理工大学	昆明理工大学	7764	Kunming University of Science and Technology
-昆明学院	昆明学院	36275	Kunming University
+昆明学院	昆明学院	26776	Kunming University
 昆明冶金职业大学	昆明冶金职业大学	G175
 昆山杜克大学	昆山杜克大学	20318	Duke Kunshan University
 兰州财经大学	兰州财经大学	10113	Lanzhou University of Finance and Economics
@@ -527,13 +526,13 @@
 辽东学院	辽东学院	G181
 辽宁大学	辽宁大学	1093	Liaoning University
 辽宁工程技术大学	辽宁工程技术大学	4600	Liaoning Technical University
-辽宁工业大学	辽宁工业大学	36376	Liaoning University of Technology
+辽宁工业大学	辽宁工业大学	26885	Liaoning University of Technology
 辽宁科技大学	辽宁科技大学	2876	University of Science and Technology Liaoning
 辽宁科技学院	辽宁科技学院	G182
 辽宁理工学院	辽宁理工学院	G183
 辽宁师范大学	辽宁师范大学	2877	Liaoning Normal University
 辽宁师范大学海华学院	辽宁师范大学海华学院	G184
-辽宁石油化工大学	辽宁石油化工大学	19790	LiaoNing Petrochemical University
+辽宁石油化工大学	辽宁石油化工大学	19790	Liaoning Petrochemical University
 辽宁中医药大学	辽宁中医药大学	G185
 辽宁装备制造职业技术学院	辽宁装备制造职业技术学院	G186
 聊城大学	聊城大学	7365	Liaocheng University
@@ -546,7 +545,7 @@
 吕梁学院	吕梁学院	G188
 洛阳理工学院	洛阳理工学院	9262	Luoyang Institute of Science and Technology
 洛阳师范学院	洛阳师范学院	3346	Luoyang Normal University
-绵阳城市学院	绵阳城市学院	36309	Mianyang City College
+绵阳城市学院	绵阳城市学院	26810	Mianyang City College
 绵阳师范学院	绵阳师范学院	G189
 民政职业大学	民政职业大学	G190
 闽江大学	闽江大学	9349	Minjiang University
@@ -564,7 +563,7 @@
 南昌职业大学	南昌职业大学	13693	Nanchang Vocational University
 南方科技大学	南方科技大学	7255	Southern University of Science and Technology
 南方医科大学	南方医科大学	3989	Southern Medical University
-南华大学	南华大学	G195
+南华大学	南华大学	3177	University of South China
 南京财经大学	南京财经大学	3180	Nanjing University of Finance and Economics
 南京大学	南京大学	1268	Nanjing University
 南京大学苏州校区	南京大学苏州校区	G196
@@ -575,14 +574,14 @@
 南京航空航天大学金城学院	南京航空航天大学金城学院	3176	Nanhang Jincheng College
 南京理工大学	南京理工大学	1271	Nanjing University of Science and Technology
 南京理工大学泰州科技学院	南京理工大学泰州科技学院	26070	Taizhou Institute of Sci. & Tech., NJUST.
-南京理工大学紫金学院	南京理工大学紫金学院	5577	Nanjing University of Science and Technology ZiJin College
+南京理工大学紫金学院	南京理工大学紫金学院	5577	Nanjing University of Science and Technology Zijin College
 南京林业大学	南京林业大学	3398	Nanjing Forestry University
 南京农业大学	南京农业大学	8785	Nanjing Agricultural University
 南京审计大学	南京审计大学	8740	Nanjing Audit University
 南京师范大学	南京师范大学	7336	Nanjing Normal University
 南京体育学院	南京体育学院	G197
 南京外国语学校	南京外国语学校	6869	Nanjing Foreign Language School
-南京晓庄学院	南京晓庄学院	8264	NanJing XiaoZhuang University
+南京晓庄学院	南京晓庄学院	8264	Nanjing Xiaozhuang University
 南京信息工程大学	南京信息工程大学	4725	Nanjing University of Information Science and Technology
 南京医科大学	南京医科大学	G198
 南京艺术学院	南京艺术学院	G199
@@ -639,7 +638,7 @@
 青岛大学	青岛大学	4383	Qingdao University
 青岛工学院	青岛工学院	5786	Qingdao Institute of Technology
 青岛恒星科技学院	青岛恒星科技学院	G215
-青岛黄海学院	青岛黄海学院	36305	Qingdao Huanghai University
+青岛黄海学院	青岛黄海学院	26806	Qingdao Huanghai University
 青岛科技大学	青岛科技大学	5236	Qingdao University of Science and Technology
 青岛理工大学	青岛理工大学	8720	Qingdao University of Technology
 青岛农业大学	青岛农业大学	5443	Qingdao Agricultural University
@@ -662,17 +661,17 @@
 三峡大学	三峡大学	6861	China Three Gorges University
 厦门大学	厦门大学	2723	Xiamen University
 厦门大学嘉庚学院	厦门大学嘉庚学院	9256	Xiamen University Tan Kah Kee College
-厦门大学马来西亚分校	厦门大学马来西亚分校	19527	Xiamen University Malaysia
+厦门大学马来西亚分校	厦门大学马来西亚分校	10031	Xiamen University Malaysia
 厦门工学院	厦门工学院	G222
 厦门理工学院	厦门理工学院	4163	Xiamen University of Technology
 山东财经大学	山东财经大学	5543	Shandong University of Finance and Economics
 山东财经大学燕山学院	山东财经大学燕山学院	G223
 山东大学	山东大学	1657	Shandong University
 山东大学附属中学	山东大学附属中学	G225
-山东大学威海	山东大学（威海）	G224
+山东大学威海	山东大学（威海）	13858	Shandong University, Weihai
 山东第二医科大学	山东第二医科大学	G226
 山东第一医科大学	山东第一医科大学	11196	Shandong First Medical University
-山东工程职业技术大学	山东工程职业技术大学	36274	Shandong Vocational and Technical University of Engineering
+山东工程职业技术大学	山东工程职业技术大学	26775	Shandong Vocational and Technical University of Engineering
 山东工商学院	山东工商学院	9955	Shandong Technology and Business University
 山东管理学院	山东管理学院	8647	Shandong Management University
 山东航空学院	山东航空学院	26299	Shandong University of Aeronautics
@@ -682,7 +681,7 @@
 山东科技大学泰安校区	山东科技大学泰安校区	8149	Shandong University of Science and Technology (Taian Campus)
 山东理工大学	山东理工大学	4055	Shandong University of Technology
 山东农业大学	山东农业大学	4684	Shandong Agricultural University
-山东女子学院	山东女子学院	5787	Shandong Women’s University
+山东女子学院	山东女子学院	5787	Shandong Women's University
 山东青年政治学院	山东青年政治学院	8652	Shandong Youth University of Political Science
 山东省垦利第一中学	山东省垦利第一中学	G228
 山东省平邑第一中学	山东省平邑第一中学	G229
@@ -697,7 +696,7 @@
 山东医药大学	山东医药大学	G235
 山东政法学院	山东政法学院	9100	Shandong University of Political Science and Law
 山东中医药大学	山东中医药大学	14684	Shandong University of Traditional Chinese Medicine
-山西财经大学	山西财经大学	36512	Shanxi University of Finance and Economics
+山西财经大学	山西财经大学	27022	Shanxi University of Finance and Economics
 山西大同大学	山西大同大学	G237
 山西大学	山西大学	6304	Shanxi University
 山西工程技术学院	山西工程技术学院	G238
@@ -756,7 +755,7 @@
 上海政法学院	上海政法学院	26293	Shanghai University of Political Science and Law
 上海中侨职业技术大学	上海中侨职业技术大学	G261
 上海中医药大学	上海中医药大学	G262
-上饶师范学院	上饶师范学院	13704	Shangrao Normal University
+上饶师范学院	上饶师范学院	13704	Shangrao Normal College
 韶关学院	韶关学院	2781	Shaoguan University
 邵阳学院	邵阳学院	3194	Shaoyang University
 绍兴大学	绍兴大学	4030	Shaoxing University
@@ -766,7 +765,7 @@
 深圳大学	深圳大学	1679	Shenzhen University
 深圳技师学院	深圳技师学院	4377	Shenzhen Institute of Technology
 深圳技术大学	深圳技术大学	10908	Shenzhen Technology University
-深圳理工大学	深圳理工大学	36425	Shenzhen University of Advanced Technology
+深圳理工大学	深圳理工大学	26934	Shenzhen University of Advanced Technology
 深圳信息职业技术大学	深圳信息职业技术大学	G265
 深圳职业技术大学	深圳职业技术大学	26739	Shenzhen Polytechnic University
 沈阳城市学院	沈阳城市学院	8727	Shenyang City University
@@ -836,7 +835,7 @@
 太原师范学院	太原师范学院	G286
 太原学院	太原学院	G287
 泰山护理职业学院	泰山护理职业学院	G288
-泰山学院	泰山学院	7788	TaiShan University
+泰山学院	泰山学院	7788	Taishan University
 泰州学院	泰州学院	14681	Taizhou University (Jiangsu)
 唐山师范学院	唐山师范学院	26746	Tangshan Normal University
 唐山学院	唐山学院	14193	Tangshan University
@@ -888,7 +887,7 @@
 武汉大学	武汉大学	2714	Wuhan University
 武汉东湖学院	武汉东湖学院	11129	Wuhan Donghu University
 武汉纺织大学	武汉纺织大学	6857	Wuhan Textile University
-武汉纺织大学外经贸学院	武汉纺织大学外经贸学院	G307
+武汉纺织大学外经贸学院	武汉纺织大学外经贸学院	26314	College of International Business and Economics, WTU
 武汉工程大学	武汉工程大学	8327	Wuhan Institute of Technology
 武汉工商学院	武汉工商学院	G308
 武汉科技大学	武汉科技大学	6300	Wuhan University of Science and Technology
@@ -899,30 +898,30 @@
 武汉商学院	武汉商学院	8751	Wuhan Business University
 武汉生物工程学院	武汉生物工程学院	26035	Wuhan University of Bioengineering
 武汉体育学院	武汉体育学院	G310
-武汉文理学院	武汉文理学院	36522	Wuhan College of Arts & Sciences
+武汉文理学院	武汉文理学院	27032	Wuhan College of Arts & Sciences
 武汉学院	武汉学院	19826	Wuhan College
 武夷学院	武夷学院	G311
 西安财经大学	西安财经大学	G312
 西安财经大学行知学院	西安财经大学行知学院	G313
 西安电子科技大学	西安电子科技大学	2724	Xidian University
-西安工程大学	西安工程大学	26109	Xi’an Polytechnic University
+西安工程大学	西安工程大学	26109	Xi'an Polytechnic University
 西安工商学院	西安工商学院	26341	Xi'an Technology and Business College
-西安工业大学	西安工业大学	7644	Xi’an Technological University
+西安工业大学	西安工业大学	7644	Xi'an Technological University
 西安航空学院	西安航空学院	G314
-西安建筑科技大学	西安建筑科技大学	G315
-西安交通大学	西安交通大学	G316
+西安建筑科技大学	西安建筑科技大学	8141	Xi'an University of Architecture and Technology
+西安交通大学	西安交通大学	2720	Xi'an Jiaotong University
 西安交通大学城市学院	西安交通大学城市学院	6905	Xi'an Jiaotong University City College
 西安科技大学	西安科技大学	G317
 西安理工大学	西安理工大学	6752	Xi'an University of Technology
 西安美术学院	西安美术学院	G318
-西安明德理工学院	西安明德理工学院	G319
+西安明德理工学院	西安明德理工学院	10841	Xi'an Mingde Institute of Technology
 西安欧亚学院	西安欧亚学院	8103	Xi'an Eurasia University
-西安石油大学	西安石油大学	19759	Xi’an Shiyou University
+西安石油大学	西安石油大学	19759	Xi'an Shiyou University
 西安思源学院	西安思源学院	10888	Xi'an Siyuan University
 西安外国语大学	西安外国语大学	G321
 西安文理学院	西安文理学院	G322
 西安医学院	西安医学院	G323
-西安邮电大学	西安邮电大学	4013	Xi’an University of Posts and Telecommunications
+西安邮电大学	西安邮电大学	6754	Xi'an University of Posts and Telecommunications
 西安职业技术学院	西安职业技术学院	G324
 西北大学	西北大学	6756	Northwest University
 西北工业大学	西北工业大学	1361	Northwestern Polytechnical University
@@ -945,7 +944,7 @@
 西南科技大学	西南科技大学	3197	Southwest University of Science and Technology
 西南林业大学	西南林业大学	G329
 西南民族大学	西南民族大学	3043	Southwest Minzu University
-西南石油大学	西南石油大学	2979	SouthWest Petroleum University
+西南石油大学	西南石油大学	2979	Southwest Petroleum University
 西南医科大学	西南医科大学	G330
 西南政法大学	西南政法大学	G331
 咸阳师范学院	咸阳师范学院	G332
@@ -955,7 +954,7 @@
 香港浸会大学	香港浸会大学	667	Hong Kong Baptist University
 香港科技大学	香港科技大学	1950	The Hong Kong University of Science and Technology
 香港科技大学广州	香港科技大学（广州）	24540	The Hong Kong University of Science and Technology (Guangzhou)
-香港理工大学	香港理工大学	G335
+香港理工大学	香港理工大学	1949	The Hong Kong Polytechnic University
 香港中文大学	香港中文大学	1942	The Chinese University of Hong Kong
 香港中文大学深圳	香港中文大学（深圳）	10679	The Chinese University of Hong Kong, Shenzhen
 湘南学院	湘南学院	3210	Xiangnan University
@@ -974,12 +973,12 @@
 新乡工程学院	新乡工程学院	25878	Xinxiang Institute of Engineering
 新乡学院	新乡学院	8599	Xinxiang University
 新余学院	新余学院	21867	Xinyu University
-信息工程大学	信息工程大学	G340
+信息工程大学	中国人民解放军网络空间部队信息工程大学	3689	Information Engineering University
 信阳农林学院	信阳农林学院	10068	Xinyang Agriculture and Forestry University
 信阳师范大学	信阳师范大学	3688	Xinyang Normal University
 星海音乐学院	星海音乐学院	G341
 邢台学院	邢台学院	G342
-兴义民族师范学院	兴义民族师范学院	8680	Xingyi Normal University For Nationalities
+兴义民族师范学院	兴义民族师范学院	8680	Minzu Normal University of Xingyi
 徐州工程学院	徐州工程学院	10080	Xuzhou University of Technology
 徐州医科大学	徐州医科大学	15861	Xuzhou Medical University
 许昌学院	许昌学院	10058	Xuchang University
@@ -988,7 +987,7 @@
 烟台理工学院	烟台理工学院	22626	Yantai Institute of Technology
 烟台南山学院	烟台南山学院	8259	Yantai Nanshan University
 延安大学	延安大学	G343
-延安大学西安创新学院	延安大学西安创新学院	G344
+延安大学西安创新学院	延安大学西安创新学院	19823	Xi'an Innovation College of Yan'an University
 延边大学	延边大学	5483	Yanbian University
 盐城工学院	盐城工学院	11105	Yancheng Institute of Technology
 盐城师范学院	盐城师范学院	11104	Yancheng Teachers University
@@ -999,10 +998,10 @@
 扬州职业技术大学	扬州职业技术大学	G346
 阳光学院	阳光学院	4618	Yango University
 仰恩大学	仰恩大学	G348
-伊犁师范大学	伊犁师范大学	26375	YiLi Normal University
+伊犁师范大学	伊犁师范大学	26375	Yili Normal University
 宜宾学院	宜宾学院	8660	Yibin University
 宜春学院	宜春学院	8739	Yichun University
-宜春幼儿师范高等专科学校	宜春幼儿师范高等专科学校	36499	Yichun Early Childhood Teachers College
+宜春幼儿师范高等专科学校	宜春幼儿师范高等专科学校	27009	Yichun Early Childhood Teachers College
 义乌工商职业技术学院	义乌工商职业技术学院	3212	Yiwu Industrial and Commercial College
 应急管理大学	应急管理大学	G349
 营口理工学院	营口理工学院	7994	YingKou Institute of Technology
@@ -1010,7 +1009,7 @@
 玉林师范学院	玉林师范学院	G351
 玉溪师范学院	玉溪师范学院	G352
 豫北医学院	豫北医学院	G353
-豫章师范学院	豫章师范学院	13717	Yuzhang Normal University
+豫章师范学院	豫章师范学院	13717	Yuzhang Normal College
 岳阳学院	岳阳学院	G354
 云南财经大学	云南财经大学	25784	Yunnan University of Finance and Economics
 云南大学	云南大学	3213	Yunnan University
@@ -1075,7 +1074,7 @@
 浙江科技大学	浙江科技大学	3039	Zhejiang University of Science & Technology
 浙江理工大学	浙江理工大学	2884	Zhejiang Sci-Tech University
 浙江旅游职业学院	浙江旅游职业学院	G375
-浙江农林大学	浙江农林大学	G376
+浙江农林大学	浙江农林大学	4578	Zhejiang A&F University
 浙江农林大学暨阳学院	浙江农林大学暨阳学院	15964	Jiyang College of Zhejiang A&F University
 浙江商业职业技术学院	浙江商业职业技术学院	10041	Zhejiang Business College
 浙江省杭州第二中学	浙江省杭州第二中学	G378
@@ -1089,7 +1088,7 @@
 浙江万里学院	浙江万里学院	3227	Zhejiang Wanli University
 浙江艺术职业学院	浙江艺术职业学院	G381
 浙江音乐学院	浙江音乐学院	G382
-浙江邮电职业技术学院	浙江邮电职业技术学院	5788	Zhejiang Post And Telecommunication College
+浙江邮电职业技术学院	浙江邮电职业技术学院	5788	Zhejiang Post and Telecommunication College
 浙江育英职业技术学院	浙江育英职业技术学院	3229	Zhejiang Yuying College of Vocational Technology
 浙江中医药大学	浙江中医药大学	3215	Zhejiang Chinese Medical University
 郑州大学	郑州大学	3230	Zhengzhou University
@@ -1107,10 +1106,10 @@
 郑州外国语学校	郑州外国语学校	G385
 郑州西亚斯学院	郑州西亚斯学院	6819	Sias University
 中北大学	中北大学	3188	North University of China
-中国传媒大学	中国传媒大学	2910	Communication University Of China
+中国传媒大学	中国传媒大学	2910	Communication University of China
 中国地质大学北京	中国地质大学（北京）	3130	China University of Geosciences, Beijing
 中国地质大学武汉	中国地质大学（武汉）	280	China University of Geosciences
-中国海洋大学	中国海洋大学	1377	Ocean University Of China
+中国海洋大学	中国海洋大学	1377	Ocean University of China
 中国计量大学	中国计量大学	3129	China Jiliang University
 中国计量大学现代科技学院	中国计量大学现代科技学院	7233	China Jiliang University College of Modern Science and Technology
 中国科学技术大学	中国科学技术大学	2505	University of Science and Technology of China
@@ -1125,7 +1124,7 @@
 中国农业大学	中国农业大学	3326	China Agricultural University
 中国青年政治学院	中国青年政治学院	G388
 中国人民大学	中国人民大学	1528	Renmin University of China
-中国人民公安大学	中国人民公安大学	36362	People's Public Security University of China
+中国人民公安大学	中国人民公安大学	26871	People's Public Security University of China
 中国人民解放军海军航空大学	中国人民解放军海军航空大学	9096	Naval Aeronautical University
 中国人民解放军空军工程大学	中国人民解放军空军工程大学	22296	Air Force Engineering University
 中国人民武装警察部队工程大学	中国人民武装警察部队工程大学	26339	Engineering University of PAP
@@ -1144,13 +1143,13 @@
 中南大学	中南大学	245	Central South University
 中南林业科技大学	中南林业科技大学	3109	Central South University of Forestry and Technology
 中南民族大学	中南民族大学	4271	South-Central Minzu University
-中山大学	中山大学	G400
+中山大学	中山大学	2755	Sun Yat-sen University
 中央财经大学	中央财经大学	5856	Central University of Finance and Economics
 中央美术学院	中央美术学院	G401
 中央民族大学	中央民族大学	8243	Minzu University of China
 中央戏剧学院	中央戏剧学院	G402
 中央音乐学院	中央音乐学院	G403
-中原工学院	中原工学院	4128	Zhongyuan University Of Technology
+中原工学院	中原工学院	4128	Zhongyuan University of Technology
 中原科技学院	中原科技学院	G404
 仲恺农业工程学院	仲恺农业工程学院	4602	Zhongkai University of Agriculture and Engineering
 周口师范学院	周口师范学院	8655	Zhoukou Normal University
