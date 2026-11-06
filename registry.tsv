@@ -27,6 +27,7 @@
 澳门大学	澳门大学	2406	University of Macau
 澳门科技大学	澳门科技大学	8414	Macau University of Science and Technology
 白城师范学院	白城师范学院	G23
+百腾教育	杭州百腾教育科技有限公司	G10	Hangzhou PAT Education Technology Co., Ltd.	百腾教育	PINTIA
 蚌埠学院	蚌埠学院	8743	Bengbu University
 蚌埠医科大学	蚌埠医科大学	G24
 宝鸡文理学院	宝鸡文理学院	G25
@@ -135,6 +136,7 @@
 重庆中医药学院	重庆中医药学院	G70
 滁州学院	滁州学院	10279	Chuzhou University
 楚雄师范学院	楚雄师范学院	G71
+打星参赛	打星参赛	G99
 大理大学	大理大学	G72
 大连财经学院	大连财经学院	G73
 大连大学	大连大学	356	Dalian University
@@ -153,6 +155,7 @@
 大连医科大学	大连医科大学	G75
 大连艺术学院	大连艺术学院	G76
 大庆师范学院	大庆师范学院	2796	Daqing Normal University
+代码源	杭州鉴浩教育科技有限公司	G11	Hangzhou Jianhao Education Technology Co., Ltd.	代码源	Daimayuan
 电子科技大学	电子科技大学	1973	University of Electronic Science and Technology of China
 电子科技大学成都学院	电子科技大学成都学院	6218	Chengdu College of University of Electronic Science and Technology of China
 电子科技大学中山学院	电子科技大学中山学院	2771	University of Electronic Science and Technology of China, Zhongshan Institute
@@ -173,6 +176,7 @@
 对外经济贸易大学	对外经济贸易大学	G81
 鄂尔多斯应用技术学院	鄂尔多斯应用技术学院	G82
 防灾科技学院已更名为应急管理大学	防灾科技学院（已更名为应急管理大学）	7724	Institute of Disaster Prevention
+非凸科技	上海非凸智能科技有限公司	G13	Shanghai Non-convex Intelligent Technology Co., Ltd	非凸科技	Non-convex
 佛山大学	佛山大学	2782	Foshan University
 福建理工大学	福建理工大学	3113	Fujian University of Technology
 福建农林大学	福建农林大学	4053	Fujian Agriculture and Forestry University
@@ -284,6 +288,7 @@
 哈尔滨信息工程学院	哈尔滨信息工程学院	12792	Harbin Institute of Information Technology
 哈尔滨学院	哈尔滨学院	2903	Harbin University
 哈尔滨医科大学	哈尔滨医科大学	G109
+嗨鸠科技	上海嗨鸠信息科技有限公司	G06	Shanghai Hydro Information Technology Co., Ltd.	嗨鸠科技	Hydro
 海南比勒费尔德应用科学大学	海南比勒费尔德应用科学大学	27012	Hainan Bielefeld University of Applied Sciences
 海南大学	海南大学	6720	Hainan University
 海南经贸职业大学	海南经贸职业大学	G110
@@ -294,7 +299,6 @@
 韩山师范学院	韩山师范学院	6731	Hanshan Normal University
 汉江师范学院	汉江师范学院	25794	Hanjiang Normal University
 汉口学院	汉口学院	25299	Hankou University
-杭州百腾教育科技有限公司	杭州百腾教育科技有限公司	G10	Hangzhou PAT Education Technology Co., Ltd.
 杭州电子科技大学	杭州电子科技大学	2956	Hangzhou Dianzi University
 杭州电子科技大学信息工程学院	杭州电子科技大学信息工程学院	6267	Hangzhou Dianzi University Information Engineering College
 杭州科技职业技术学院	杭州科技职业技术学院	G114
@@ -543,8 +547,10 @@
 陇东学院	陇东学院	10212	Longdong University
 鲁东大学	鲁东大学	5441	Ludong University
 吕梁学院	吕梁学院	G188
+洛谷科技	上海洛谷网络科技有限公司	G08	Shanghai Luogu Network Technology Co., Ltd.	洛谷科技	Luogu
 洛阳理工学院	洛阳理工学院	9262	Luoyang Institute of Science and Technology
 洛阳师范学院	洛阳师范学院	3346	Luoyang Normal University
+蒙古国立大学	The National University of Mongolia	3508
 绵阳城市学院	绵阳城市学院	26810	Mianyang City College
 绵阳师范学院	绵阳师范学院	G189
 民政职业大学	民政职业大学	G190
@@ -826,6 +832,7 @@
 苏州职业技术大学	苏州职业技术大学	G284
 宿迁学院	宿迁学院	26057	Suqian University
 宿州学院	宿州学院	5308	Suzhou University
+算艺出题组	杭州市西湖区算艺信息科技工作室	G09	Suimei University of Arts Programming Contest Problem-Setting Team	算艺出题组	SUA
 塔里木大学	塔里木大学	10081	Tarim University
 台州学院	台州学院	3200	Taizhou University (Zhejiang)
 台州职业技术学院	台州职业技术学院	3201	Taizhou Vocational and Technical College
@@ -863,6 +870,7 @@
 铜陵学院	铜陵学院	8719	Tongling University
 铜仁学院	铜仁学院	9162	Tongren University
 外交学院	外交学院	G299
+顽岩资产	上海顽岩私募基金管理有限公司	G14		顽岩资产	Wanyan
 皖西学院	皖西学院	3209	West Anhui University
 潍坊科技学院	潍坊科技学院	9092	Weifang University of Science and Technology
 潍坊理工学院	潍坊理工学院	22098	Weifang Institute of Technology
@@ -1159,3 +1167,6 @@
 淄博职业技术大学	淄博职业技术大学	G406
 遵义师范学院	遵义师范学院	G407
 遵义医科大学	遵义医科大学	G408
+Huawei	华为技术有限公司	G01	Huawei Technologies Co., Ltd.	华为	Huawei
+MiniMax	上海稀宇极智科技有限公司	G12	Shanghai Xiyu Jizhi Technology Co., Ltd.	MiniMax	MiniMax
+UCup	环球杯	G07	Universal Cup	环球杯	UCup
